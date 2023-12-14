@@ -1,0 +1,21 @@
+{
+  "name": "gazetrack",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@jspsych/plugin-html-keyboard-response": "^1.1.3",
+    "jspsych": "^7.3.4",
+    "vue": "^3.3.11",
+    "webgazer": "^3.3.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^4.5.2",
+    "vite": "^5.0.8"
+  }
+}
