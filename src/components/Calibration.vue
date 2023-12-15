@@ -10,19 +10,19 @@
 
    <!-- Calibration points -->
       <div class="calibrationDiv">
-         <input type="button" class="Calibration" id="Pt1" />
-         <input type="button" class="Calibration" id="Pt2" />
-         <input type="button" class="Calibration" id="Pt3" />
-         <input type="button" class="Calibration" id="Pt4" />
-         <input type="button" class="Calibration" id="Pt5" />
-         <input type="button" class="Calibration" id="Pt6" />
-         <input type="button" class="Calibration" id="Pt7" />
-         <input type="button" class="Calibration" id="Pt8" />
-         <input type="button" class="Calibration" id="Pt9" />
+         <input @click="calPointClick" type="button" class="Calibration" id="Pt1" />
+         <input @click="calPointClick" type="button" class="Calibration" id="Pt2" />
+         <input @click="calPointClick" type="button" class="Calibration" id="Pt3" />
+         <input @click="calPointClick" type="button" class="Calibration" id="Pt4" />
+         <input @click="calPointClick" type="button" class="Calibration" id="Pt5" />
+         <input @click="calPointClick" type="button" class="Calibration" id="Pt6" />
+         <input @click="calPointClick" type="button" class="Calibration" id="Pt7" />
+         <input @click="calPointClick" type="button" class="Calibration" id="Pt8" />
+         <input @click="calPointClick" type="button" class="Calibration" id="Pt9" />
       </div>
       <a-modal v-model:visible="modalVisible" @ok="handleOk" @cancel="handleCancel">
     <template #title>
-      Calibration
+      Calibration1
     </template>
     <div>Please click on each of the 9 points on the screen. You must click on each point 5 times till it goes yellow. This will calibrate your eye movements.</div>
   </a-modal>
@@ -39,22 +39,22 @@
 </template>
    
 <script setup>
-import { ref, getCurrentInstance,onMounted, onActivated,h  } from 'vue'
+import { ref, getCurrentInstance,onMounted, onActivated,h,onBeforeUnmount  } from 'vue'
 import { Modal, Button } from '@arco-design/web-vue';
 
-import {ClearCalibration,PopUpInstruction,ShowCalibrationPoint,docLoad } from '../webgazer/calibration.js'
+import {ClearCalibration,PopUpInstruction,ShowCalibrationPoint,docLoad,calPointClick,ClearCanvas } from '../webgazer/calibration.js'
 // defineProps({
 //   msg: String,
 // })
-const modalVisible = ref(false);
+const modalVisible = ref(true);
 const modalTitle = ref();
 const modalBody = ref();
 var handleOk = () => {
-   ShowCalibrationPoint()
+    Restart()
    modalVisible.value = false;
     };
     var handleCancel = () => {
-      ShowCalibrationPoint()
+        Restart()
       modalVisible.value = false;
     }
 function resize() {
@@ -70,39 +70,25 @@ const emit = getCurrentInstance().emit;
 
 var gazeData = [];
 var onlyTime = [];
-onMounted(() => {
-    docLoad()
+onMounted(async () => {
     console.log("kkkk",window.webgazer)
     resize()
     //start the webgazer tracker
-    window.webgazer.setRegression('ridge') /* currently must set regression and tracker */
-        .setTracker('clmtrackr')
-        .setGazeListener(function (data, clock) {
-            // console.log(data); /* data is an object containing an x and y key which are the x and y prediction coordinates (no bounds limiting) */
-
-            if (data != null && data["x"]>0 && data["y"]>0 && isCalibrated && data["x"]<= screen.width && data["y"]<=screen.height) {
-                var predx = data["x"];
-                var predy = data["y"];
-                var elapsedTime = clock;
-
-                // push to gazeData array
-                gazeData.push([elapsedTime, predx, predy]);
-
-                // push to onlyTime array
-                onlyTime.push([elapsedTime]);
-
-                console.log(data["x"] + ", " + data["y"] + ", " + clock);
-            }
-
-            //   console.log(clock); /* elapsed time in milliseconds since webgazer.begin() was called */
-            //   console.log(elapsedTime);
+    //start the webgazer tracker
+    await window.webgazer.setRegression('weightRidge') // ridge /* currently must set regression and tracker */
+        //.setTracker('clmtrackr')
+        .setGazeListener(function(data, clock) {
+          //   console.log(data); /* data is an object containing an x and y key which are the x and y prediction coordinates (no bounds limiting) */
+          //   console.log(clock); /* elapsed time in milliseconds since webgazer.begin() was called */
         })
-        .begin()
-        window.webgazer.showPredictionPoints(true); /* shows a square every 100 milliseconds where current prediction is */
-
+        .saveDataAcrossSessions(true)
+        .begin();
+        window.webgazer.showVideoPreview(true) /* shows all video previews */
+            .showPredictionPoints(true) /* shows a square every 100 milliseconds where current prediction is */
+            .applyKalmanFilter(true); /* Kalman Filter defaults to on. Can be toggled by user. */
 
     //Set up the webgazer video feedback.
-    var setup = function () {
+    var setup = function() {
 
         //Set up the main canvas. The main canvas is used to calibrate the webgazer.
         var canvas = document.getElementById("plotting_canvas");
@@ -110,20 +96,14 @@ onMounted(() => {
         canvas.height = window.innerHeight;
         canvas.style.position = 'fixed';
     };
+    setup();
 
-    function checkIfReady() {
-      // console.log("!!!!")
-      //   if (window.webgazer.isReady()) {
-            setup();
-            Restart();
-      //   } else {
-      //       setTimeout(checkIfReady, 100);
-      //   }
-    }
-    setTimeout(checkIfReady, 100);
 
 })
-
+window.saveDataAcrossSessions = true;
+onBeforeUnmount(() => {
+    window.webgazer.end();
+})
 
 //  exporting data to .csv
 function saveGaze(expData) {
@@ -140,23 +120,23 @@ function saveGaze(expData) {
     hiddenElement.click();
 }
 
-window.onbeforeunload = function () {
-    //webgazer.end(); //Uncomment if you want to save the data even if you reload the page.
-    window.localStorage.clear(); //Comment out if you want to save data across different sessions
-}
 
 /**
  * Restart the calibration process by clearing the local storage and reseting the calibration point
  */
 function Restart() {
+    console.log("setok")
    window.calibrationOK = ()=>{
       emit('button-clicked',true);
    }
    //  document.getElementById("Accuracy").innerHTML = "<a>Not yet Calibrated</a>";
    // ShowModal();
+    // docLoad();
+    ClearCanvas();
     ClearCalibration();
-    PopUpInstruction();
-   //  docLoad();
+    // PopUpInstruction();
+    ShowCalibrationPoint();
+
 }
 
 
@@ -165,5 +145,6 @@ function Restart() {
    
 <style scoped>
 @import "../webgazer/style.css";
+
 </style>
    

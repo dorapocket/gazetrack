@@ -7,7 +7,7 @@
     </div>
 </template>
 <script setup>
-import { ref, onMounted, reactive, watch, getCurrentInstance } from 'vue';
+import { ref, onMounted, reactive, watch, getCurrentInstance, onBeforeMount } from 'vue';
 import { Modal, Button } from '@arco-design/web-vue';
 const canvasWidth = 1000;
 const canvasHeight = 500;
@@ -23,10 +23,24 @@ const flash = ref(false);
 const clicks = ref(0);
 let timer;
 
-onMounted(() => {
+onMounted(async () => {
+    await window.webgazer.setRegression('ridge') // ridge /* currently must set regression and tracker */
+        //.setTracker('clmtrackr')
+        .setGazeListener(function(data, clock) {
+          //   console.log(data); /* data is an object containing an x and y key which are the x and y prediction coordinates (no bounds limiting) */
+          //   console.log(clock); /* elapsed time in milliseconds since webgazer.begin() was called */
+        })
+        .saveDataAcrossSessions(true)
+        .begin();
+        window.webgazer.showPredictionPoints(true) /* shows a square every 100 milliseconds where current prediction is */
+            .applyKalmanFilter(true); /* Kalman Filter defaults to on. Can be toggled by user. */
+
     loadImages();
     startTimer();
 });
+onBeforeMount(()=>{
+    window.webgazer.end();
+})
 const pic1base = { x: 0, y: 0 }
 const pic2base = { x: 0, y: 0 }
 const sensity = 15

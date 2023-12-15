@@ -8,7 +8,7 @@
         display: block !important; 
         position: fixed !important;
         top: 0px !important;
-        left: 0px !important;
+        left: 7vw !important;
         width: 320px !important;
         height: 240px !important;
         z-index: 1;
@@ -75,7 +75,7 @@
     /* Calibration point position */
     #Pt1{
         top: 2vw; /*70px*/
-        left: 2vw;
+        left: 400px;
     }
     #Pt2{
         top: 2vw;

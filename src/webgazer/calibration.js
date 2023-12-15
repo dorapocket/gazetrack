@@ -24,16 +24,16 @@ function ClearCanvas(){
  */
 function PopUpInstruction(){
   ClearCanvas();
-  Modal.info({
-    title: 'Calibration',
-    content: "Please click on each of the 9 points on the screen. You must click on each point 5 times till it goes yellow. This will calibrate your eye movements.",
-    okText:"Start Calibrate",
-    onOk:()=>{
-        // window.calibrationOK();
-        // ShowCalibrationPoint();
-        calcAccuracy()
-    }
-  });
+  // Modal.info({
+  //   title: 'Calibration',
+  //   content: "Please click on each of the 9 points on the screen. You must click on each point 5 times till it goes yellow. This will calibrate your eye movements.",
+  //   okText:"Start Calibrate",
+  //   onOk:()=>{
+  //       // window.calibrationOK();
+  //       // ShowCalibrationPoint();
+  //       calcAccuracy()
+  //   }
+  // });
 //   swal({
 //     title:"Calibration",
 //     text: "Please click on each of the 9 points on the screen. You must click on each point 5 times till it goes yellow. This will calibrate your eye movements.",
@@ -87,6 +87,7 @@ function calcAccuracy() {
                         ,
                         okText:"Continue Experiment",
                         cancelText:"Recalibrate",
+                        draggable:true,
                         simple:false,
                         hideCancel:false,
                         okButtonProps:{disabled:precision_measurement<measurement_limit},
@@ -96,7 +97,7 @@ function calcAccuracy() {
                         },
                         onCancel:()=>{
                             //use restart function to restart the calibration
-                            window.webgazer.clearData();
+                            //window.webgazer.clearData();
                             ClearCalibration();
                             ClearCanvas();
                             ShowCalibrationPoint();
@@ -121,6 +122,7 @@ function calcAccuracy() {
 }
 
 function calPointClick(node) {
+  node = node.srcElement;
     const id = node.id;
 
     if (!CalibrationPoints[id]){ // initialises if not done
@@ -170,11 +172,11 @@ function docLoad() {
 //   helpModalShow();
     
     // click event on the calibration buttons
-    document.querySelectorAll('.Calibration').forEach((i) => {
-        i.addEventListener('click', () => {
-            calPointClick(i);
-        })
-    })
+    // document.querySelectorAll('.Calibration').forEach((i) => {
+    //     i.addEventListener('click', () => {
+    //         calPointClick(i);
+    //     })
+    // })
 };
 // window.addEventListener('load', docLoad);
 
@@ -293,5 +295,7 @@ export {
     ClearCalibration,
     PopUpInstruction,
     ShowCalibrationPoint,
-    docLoad
+    docLoad,
+    calPointClick,
+    ClearCanvas
 }
