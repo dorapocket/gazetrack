@@ -1,5 +1,6 @@
 <template>
-   <canvas id="plotting_canvas" width="500" height="500" style="cursor:crosshair;"></canvas>
+   <div style="width: 100vw;height: 100vh;">
+      <canvas id="plotting_canvas" width="500" height="500" style="cursor:crosshair;"></canvas>
 
             <!-- <ul class="nav navbar-nav">
                <li id="Accuracy"><a>Not yet Calibrated</a></li>
@@ -8,47 +9,69 @@
             </ul> -->
 
    <!-- Calibration points -->
-   <div class="calibrationDiv">
-      <input type="button" class="Calibration" id="Pt1" />
-      <input type="button" class="Calibration" id="Pt2" />
-      <input type="button" class="Calibration" id="Pt3" />
-      <input type="button" class="Calibration" id="Pt4" />
-      <input type="button" class="Calibration" id="Pt5" />
-      <input type="button" class="Calibration" id="Pt6" />
-      <input type="button" class="Calibration" id="Pt7" />
-      <input type="button" class="Calibration" id="Pt8" />
-      <input type="button" class="Calibration" id="Pt9" />
+      <div class="calibrationDiv">
+         <input type="button" class="Calibration" id="Pt1" />
+         <input type="button" class="Calibration" id="Pt2" />
+         <input type="button" class="Calibration" id="Pt3" />
+         <input type="button" class="Calibration" id="Pt4" />
+         <input type="button" class="Calibration" id="Pt5" />
+         <input type="button" class="Calibration" id="Pt6" />
+         <input type="button" class="Calibration" id="Pt7" />
+         <input type="button" class="Calibration" id="Pt8" />
+         <input type="button" class="Calibration" id="Pt9" />
+      </div>
+      <a-modal v-model:visible="modalVisible" @ok="handleOk" @cancel="handleCancel">
+    <template #title>
+      Calibration
+    </template>
+    <div>Please click on each of the 9 points on the screen. You must click on each point 5 times till it goes yellow. This will calibrate your eye movements.</div>
+  </a-modal>
    </div>
+   
    <!-- Modal -->
-<div style="position: absolute; float: left;top: 60vh;left: 48vw;">
+<!-- <div style="position: absolute; float: left;top: 60vh;left: 48vw;">
    <p id="Accuracy"><a>Not yet Calibrated</a></p>
                <button type="button" id='start_calibration' class="btn btn-primary" data-bs-dismiss="modal"
                   @click="Restart">Calibrate</button>
-</div>
+</div> -->
 
 
 </template>
    
 <script setup>
-import { ref, getCurrentInstance,onMounted  } from 'vue'
+import { ref, getCurrentInstance,onMounted, onActivated,h  } from 'vue'
+import { Modal, Button } from '@arco-design/web-vue';
 
-import {ClearCalibration,PopUpInstruction } from '../webgazer/calibration.js'
+import {ClearCalibration,PopUpInstruction,ShowCalibrationPoint,docLoad } from '../webgazer/calibration.js'
 // defineProps({
 //   msg: String,
 // })
+const modalVisible = ref(false);
+const modalTitle = ref();
+const modalBody = ref();
+var handleOk = () => {
+   ShowCalibrationPoint()
+   modalVisible.value = false;
+    };
+    var handleCancel = () => {
+      ShowCalibrationPoint()
+      modalVisible.value = false;
+    }
 function resize() {
    var canvas = document.getElementById('plotting_canvas');
    var context = canvas.getContext('2d');
    context.clearRect(0, 0, canvas.width, canvas.height);
-   canvas.width = window.innerWidth-7;
-   canvas.height = window.innerHeight-7;
+   canvas.width = window.innerWidth;
+   canvas.height = window.innerHeight;
 };
 window.addEventListener('resize', resize, false);
+const emit = getCurrentInstance().emit;
 // 
 
 var gazeData = [];
 var onlyTime = [];
 onMounted(() => {
+    docLoad()
     console.log("kkkk",window.webgazer)
     resize()
     //start the webgazer tracker
@@ -89,13 +112,16 @@ onMounted(() => {
     };
 
     function checkIfReady() {
-        if (webgazer.isReady()) {
+      // console.log("!!!!")
+      //   if (window.webgazer.isReady()) {
             setup();
-        } else {
-            setTimeout(checkIfReady, 100);
-        }
+            Restart();
+      //   } else {
+      //       setTimeout(checkIfReady, 100);
+      //   }
     }
     setTimeout(checkIfReady, 100);
+
 })
 
 
@@ -123,10 +149,16 @@ window.onbeforeunload = function () {
  * Restart the calibration process by clearing the local storage and reseting the calibration point
  */
 function Restart() {
-    document.getElementById("Accuracy").innerHTML = "<a>Not yet Calibrated</a>";
+   window.calibrationOK = ()=>{
+      emit('button-clicked',true);
+   }
+   //  document.getElementById("Accuracy").innerHTML = "<a>Not yet Calibrated</a>";
+   // ShowModal();
     ClearCalibration();
     PopUpInstruction();
+   //  docLoad();
 }
+
 
 </script>
    

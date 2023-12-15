@@ -1,3 +1,7 @@
+
+
+import { Modal, Button } from '@arco-design/web-vue';
+import {h} from 'vue'
 var PointCalibrate = 0;
 var CalibrationPoints={};
 
@@ -19,7 +23,17 @@ function ClearCanvas(){
  * Show the instruction of using calibration at the start up screen.
  */
 function PopUpInstruction(){
-//   ClearCanvas();
+  ClearCanvas();
+  Modal.info({
+    title: 'Calibration',
+    content: "Please click on each of the 9 points on the screen. You must click on each point 5 times till it goes yellow. This will calibrate your eye movements.",
+    okText:"Start Calibrate",
+    onOk:()=>{
+        // window.calibrationOK();
+        // ShowCalibrationPoint();
+        calcAccuracy()
+    }
+  });
 //   swal({
 //     title:"Calibration",
 //     text: "Please click on each of the 9 points on the screen. You must click on each point 5 times till it goes yellow. This will calibrate your eye movements.",
@@ -28,7 +42,7 @@ function PopUpInstruction(){
 //       confirm: true
 //     }
 //   }).then(isConfirm => {
-    ShowCalibrationPoint();
+    // ShowCalibrationPoint();
 //   });
 
 }
@@ -45,6 +59,54 @@ function helpModalShow() {
 function calcAccuracy() {
     // show modal
     // notification for the measurement process
+
+    Modal.info({
+        title: 'Calculating measurement',
+        content: "Please don't move your mouse & stare at the middle dot for the next 5 seconds. This will allow us to calculate the accuracy of our predictions.",
+        okText:"Continue",
+
+        onOk:()=>{
+            store_points_variable(); // start storing the prediction points
+            let measurement_limit = 0
+            sleep(5000).then(() => {
+                    stop_storing_points_variable(); // stop storing the prediction points
+                    var past50 = window.webgazer.getStoredPoints(); // retrieve the stored points
+                    var precision_measurement = calculatePrecision(past50);
+                    Modal.info({
+                        title: 'Measure',
+                        content: ()=>h({
+                            setup() {
+                              return () => h('div', {class: 'info-modal-content'}, [
+                                h('div', {style: 'margin-bottom: 10px;'}, "Your accuracy measure is " + precision_measurement + "%"),
+                                h('div', {style: precision_measurement>measurement_limit?'color:green;':'color:red;'},[
+                                    h('span',{},precision_measurement>measurement_limit?'You can click button to continue.':'Please recalibrate!')
+                                ]),
+                              ])
+                            },
+                          })
+                        ,
+                        okText:"Continue Experiment",
+                        cancelText:"Recalibrate",
+                        simple:false,
+                        hideCancel:false,
+                        okButtonProps:{disabled:precision_measurement<measurement_limit},
+                        onOk:()=>{
+                            ClearCanvas();
+                            window.calibrationOK();
+                        },
+                        onCancel:()=>{
+                            //use restart function to restart the calibration
+                            window.webgazer.clearData();
+                            ClearCalibration();
+                            ClearCanvas();
+                            ShowCalibrationPoint();
+                        }
+                    });
+                    // var accuracyLabel = "<a>Accuracy | "+precision_measurement+"%</a>";
+                    // document.getElementById("Accuracy").innerHTML = accuracyLabel; // Show the accuracy in the nav bar.
+            });
+        }
+      });
     // swal({
     //     title: "Calculating measurement",
     //     text: "Please don't move your mouse & stare at the middle dot for the next 5 seconds. This will allow us to calculate the accuracy of our predictions.",
@@ -54,35 +116,7 @@ function calcAccuracy() {
     // }).then( () => {
         // makes the variables true for 5 seconds & plots the points
     
-        store_points_variable(); // start storing the prediction points
-    
-        sleep(5000).then(() => {
-                stop_storing_points_variable(); // stop storing the prediction points
-                var past50 = window.webgazer.getStoredPoints(); // retrieve the stored points
-                var precision_measurement = calculatePrecision(past50);
-                var accuracyLabel = "<a>Accuracy | "+precision_measurement+"%</a>";
-                document.getElementById("Accuracy").innerHTML = accuracyLabel; // Show the accuracy in the nav bar.
-                swal({
-                    title: "Your accuracy measure is " + precision_measurement + "%",
-                    allowOutsideClick: false,
-                    buttons: {
-                        cancel: "Recalibrate",
-                        confirm: true,
-                    }
-                }).then(isConfirm => {
-                        if (isConfirm){
-                            //clear the calibration & hide the last middle button
-                            ClearCanvas();
-                        } else {
-                            //use restart function to restart the calibration
-                            document.getElementById("Accuracy").innerHTML = "<a>Not yet Calibrated</a>";
-                            window.webgazer.clearData();
-                            ClearCalibration();
-                            ClearCanvas();
-                            ShowCalibrationPoint();
-                        }
-                });
-        });
+       
     // });
 }
 
@@ -133,7 +167,7 @@ function calPointClick(node) {
 //$(document).ready(function(){
 function docLoad() {
   ClearCanvas();
-  helpModalShow();
+//   helpModalShow();
     
     // click event on the calibration buttons
     document.querySelectorAll('.Calibration').forEach((i) => {
@@ -142,7 +176,7 @@ function docLoad() {
         })
     })
 };
-window.addEventListener('load', docLoad);
+// window.addEventListener('load', docLoad);
 
 /**
  * Show the Calibration Points
@@ -258,4 +292,6 @@ function store_points_variable(){
 export {
     ClearCalibration,
     PopUpInstruction,
+    ShowCalibrationPoint,
+    docLoad
 }

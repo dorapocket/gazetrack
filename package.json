@@ -15,7 +15,10 @@
     "webgazer": "^3.3.0"
   },
   "devDependencies": {
+    "@arco-design/web-vue": "^2.53.3",
     "@vitejs/plugin-vue": "^4.5.2",
+    "unplugin-auto-import": "^0.17.2",
+    "unplugin-vue-components": "^0.26.0",
     "vite": "^5.0.8"
   }
 }
