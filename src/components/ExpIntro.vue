@@ -6,11 +6,12 @@
        <a-row class="grid-demo">
        <a-col :span="16" :offset="4">
            <a-card title="注意事项">
-            再给爷200块才能继续做
+            欢迎参与本次实验，接下来您将会看见左右呈现的两幅真实场景的图片，你需要在60s内找出两幅图片中的一处不同，可以利用鼠标辅助搜索，在任何图片中左击选中的物体，如果错误则不会有任何反应，如果正确则出现绿色圆圈并进入下一题。
+            <div style="color:red">接下来是一张样例</div>
        <!-- <template #extra>
            <a-link>More</a-link>
        </template> -->
-       <div style="margin-top:40px">       <a-button @click="handleOk" type="primary">让爷试试</a-button></div>
+       <div style="margin-top:40px">       <a-button @click="handleOk" type="primary">开始</a-button></div>
 
        
        </a-card>

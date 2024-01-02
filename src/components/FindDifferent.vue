@@ -1,95 +1,131 @@
 <template>
     <div id="different-container" style="width: 100vw;height: 100vh;">
-        <div style="position: absolute; margin: 10px 30px; top:0px; left:20px">
+        <div style="position: absolute; margin: 10px 30px; top:0px; right:20px">
             <h1><icon-clock-circle style="margin-right: 10px;" /> {{ remainingTime }}s</h1>
         </div>
         <canvas ref="canvasRef" :width="canvasWidth" :height="canvasHeight" @click="handleCanvasClick"></canvas>
     </div>
 </template>
 <script setup>
-import { ref, onMounted, reactive, watch, getCurrentInstance, onBeforeMount } from 'vue';
+import { ref, onMounted, reactive, watch, getCurrentInstance, onBeforeMount, toRefs, onUpdated, inject } from 'vue';
 import { Modal, Button } from '@arco-design/web-vue';
 const canvasWidth = 1000;
 const canvasHeight = 500;
-const canvasRef = ref(null)
-const remainingTime = ref(100);
-const gameData = reactive({
-    pic1: "/public/pic1.png",
-    pic2: "/public/pic2.png",
-    differentx: 20,
-    differenty: 40
-});
+const canvasRef = ref(null);
+// const props = defineProps(["imageToFind"]);
+const remainingTime = ref(60);
+const gameData = inject('imageToFind');
+// console.log("!!!",gameData);
 const flash = ref(false);
 const clicks = ref(0);
 let timer;
 
-onMounted(async () => {
-    await window.webgazer.setRegression('ridge') // ridge /* currently must set regression and tracker */
-        //.setTracker('clmtrackr')
-        .setGazeListener(function(data, clock) {
-          //   console.log(data); /* data is an object containing an x and y key which are the x and y prediction coordinates (no bounds limiting) */
-          //   console.log(clock); /* elapsed time in milliseconds since webgazer.begin() was called */
-        })
-        .saveDataAcrossSessions(true)
-        .begin();
-        window.webgazer.showPredictionPoints(true) /* shows a square every 100 milliseconds where current prediction is */
-            .applyKalmanFilter(true); /* Kalman Filter defaults to on. Can be toggled by user. */
+// onMounted(async () => {
+//     await window.webgazer.setRegression('ridge') // ridge /* currently must set regression and tracker */
+//         //.setTracker('clmtrackr')
+//         .setGazeListener(function(data, clock) {
+//           //   console.log(data); /* data is an object containing an x and y key which are the x and y prediction coordinates (no bounds limiting) */
+//           //   console.log(clock); /* elapsed time in milliseconds since webgazer.begin() was called */
+//         })
+//         .saveDataAcrossSessions(true)
+//         .begin();
+//         window.webgazer.showPredictionPoints(true) /* shows a square every 100 milliseconds where current prediction is */
+//             .applyKalmanFilter(true); /* Kalman Filter defaults to on. Can be toggled by user. */
 
-    loadImages();
-    startTimer();
-});
-onBeforeMount(()=>{
-    window.webgazer.end();
+//     loadImages();
+//     startTimer();
+// });
+// onBeforeMount(()=>{
+//     window.webgazer.end();
+// })
+onMounted(()=>{
+    loadImages(startTimer);
 })
+// onUpdated(()=>{
+//     console.log('props.imageToFind has changed:', props.imageToFind);
+// })
+watch(gameData,()=>{
+    loadImages(startTimer);
+})
+setInterval(()=>{
+    // console.log(props.imageToFind)
+},1000)
 const pic1base = { x: 0, y: 0 }
 const pic2base = { x: 0, y: 0 }
 const sensity = 15
-const loadImages = () => {
+const clickTrace = [] //[{x:0,y:0,time:0,find:false,side:"left/right"}]
+let baseTime = 0;
+function setTrace(x,y,find,side){
+    clickTrace.push({x,y,time:Date.now()-baseTime,find,side})
+    console.log({x,y,time:Date.now()-baseTime,find,side},baseTime,Date.now())
+}
+const loadImages = (timer) => {
     const canvas = canvasRef.value;
     const context = canvas.getContext("2d");
-
+    let anotherload = false;
     const img1 = new Image();
     window.img1 = img1;
-    img1.src = gameData.pic1;
+    img1.src = gameData.value.pic1;
+
 
 
     const img2 = new Image();
     window.img2 = img2;
-    img2.src = gameData.pic2;
+    img2.src = gameData.value.pic2;
 
-
+    
     img1.onload = () => {
+        img1.width = img1.width * gameData.value.scale
+    img1.height = img1.height * gameData.value.scale
         pic1base.x = (canvasWidth / 2 - img1.width) / 2;
         pic1base.y = (canvasHeight - img1.height) / 2;
+        console.log(img1.width, img1.height, gameData.value.scale)
         context.drawImage(img1, pic1base.x, pic1base.y, img1.width, img1.height);
-        console.log(gameData)
+        
+        if(anotherload){
+            timer()
+        }else{
+            anotherload=true;
+        }
+        // console.log(gameData)
         // drawCircle(pic1base.x+gameData.differentx, pic1base.y+gameData.differenty);
     };
 
     img2.onload = () => {
+        img2.width = img2.width * gameData.value.scale
+    img2.height = img2.height * gameData.value.scale
         pic2base.x = canvasWidth / 2 + (canvasWidth / 2 - img2.width) / 2;
         pic2base.y = (canvasHeight - img2.height) / 2;
         context.drawImage(img2, pic2base.x, pic2base.y, img2.width, img2.height);
+
+        if(anotherload){
+            timer()
+        }else{
+            anotherload=true;
+        }
     };
 
 };
 
 const startTimer = () => {
+    if(window.timer){
+        clearInterval(timer);
+    }
+    remainingTime.value = 60;
     timer = setInterval(() => {
         if (remainingTime.value > 0) {
             remainingTime.value--;
         } else {
             clearInterval(timer);
+            emit('report-finish',buildResultReport());
             Modal.error({
-                title: '结果',
-                content: "诶哟，再试试？",
-                okText: "继续",
-                cancelText: "重试",
-                hideCancel:false,
-                simple: false,
+                title: '时间到啦',
+                content: "没关系，下次继续加油哦！",
+                okText: "下一组",
+                hideCancel:true,
+                simple: true,
                 onCancel: () => {
-                    loadImages();
-                    startTimer();
+                    loadImages(startTimer);
                 },
                 onOk: () => {
                     emit('button-clicked', true);
@@ -97,6 +133,7 @@ const startTimer = () => {
             });
         }
     }, 1000);
+    baseTime = Date.now();
     window.timer = timer
 };
 const emit = getCurrentInstance().emit;
@@ -106,41 +143,71 @@ const handleCanvasClick = (event) => {
     const x = event.clientX - rect.left;
     const y = event.clientY - rect.top;
 
+    const inLeftImage = (x > pic1base.x && x < pic1base.x + img1.width) && (y > pic1base.y && y < pic1base.y + img1.height);
+    const inRightImage = (x > pic2base.x && x < pic2base.x + img2.width) && (y > pic2base.y && y < pic2base.y + img2.height);
+    let find = false;
     if (
-        ((x > pic1base.x + gameData.differentx - sensity) && (x < pic1base.x + gameData.differentx + sensity) && (y > pic1base.y + gameData.differenty - sensity) && (y < pic1base.y + gameData.differenty + sensity)) ||
-        ((x > pic2base.x + gameData.differentx - sensity) && (x < pic2base.x + gameData.differentx + sensity) && (y > pic2base.y + gameData.differenty - sensity) && (y < pic2base.y + gameData.differenty + sensity))
+        ((x > pic1base.x + gameData.value.differentx - sensity) && (x < pic1base.x + gameData.value.differentx + sensity) && (y > pic1base.y + gameData.value.differenty - sensity) && (y < pic1base.y + gameData.value.differenty + sensity)) ||
+        ((x > pic2base.x + gameData.value.differentx - sensity) && (x < pic2base.x + gameData.value.differentx + sensity) && (y > pic2base.y + gameData.value.differenty - sensity) && (y < pic2base.y + gameData.value.differenty + sensity))
         // (x < gameData.differentx && y < gameData.differenty) ||
         // (x > canvasWidth / 2 + gameData.differentx && y < gameData.differenty)
     ) {
-        drawCircle(pic1base.x + gameData.differentx, pic1base.y + gameData.differenty);
-        drawCircle(pic2base.x + gameData.differentx, pic2base.y + gameData.differenty);
+        find = true;
+        drawCircle(pic1base.x + gameData.value.differentx, pic1base.y + gameData.value.differenty);
+        drawCircle(pic2base.x + gameData.value.differentx, pic2base.y + gameData.value.differenty);
+        if(inLeftImage){
+        setTrace(x-pic1base.x,y-pic1base.y,find,"left")
+    }
+    if(inRightImage){
+        setTrace(x-pic2base.x,y-pic2base.y,find,"right")
+    }
         if (window.timer) clearInterval(window.timer);
-        Modal.info({
-            title: '结果',
-            content: "诶哟，不错哦",
-            okText: "继续",
-            cancelText: "重试",
-            simple: false,
-            hideCancel:false,
-            onCancel: () => {
-                loadImages();
-                startTimer();
-            },
-            onOk: () => {
-                emit('button-clicked', true);
-            }
-        });
+        emit('report-finish',buildResultReport());
+        emit('button-clicked', true);
+        // Modal.info({
+        //     title: '结果',
+        //     content: "你真厉害！🎊",
+        //     okText: "继续",
+        //     simple: true,
+        //     hideCancel:true,
+        //     onOk: () => {
+        //         emit('button-clicked', true);
+        //     }
+        // });
     } else {
         const context = canvas.getContext("2d");
+        if(inLeftImage){
+        setTrace(x-pic1base.x,y-pic1base.y,find,"left")
+    }
+    if(inRightImage){
+        setTrace(x-pic2base.x,y-pic2base.y,find,"right")
+    }
         drawX(x, y);
         setTimeout(() => {
-            context.drawImage(window.img1, x - pic1base.x - 13, y - pic1base.y - 13, 26, 26, x - 13, y - 13, 26, 26);
-            context.drawImage(window.img2, x - pic2base.x - 13, y - pic2base.y - 13, 26, 26, x - 13, y - 13, 26, 26);
+            context.drawImage(window.img1, (x - pic1base.x - 13)/gameData.value.scale, (y - pic1base.y - 13)/gameData.value.scale, 26/gameData.value.scale, 26/gameData.value.scale, x - 13, y - 13, 26, 26);
+            context.drawImage(window.img2, (x - pic2base.x - 13)/gameData.value.scale, (y - pic2base.y - 13)/gameData.value.scale, 26/gameData.value.scale, 26/gameData.value.scale, x - 13, y - 13, 26, 26);
         }, 500)
-
     }
+    
 };
-
+const buildResultReport = () => {
+    const result = {
+        clicks: JSON.parse(JSON.stringify(clickTrace)),
+        timeCost: Date.now() - baseTime,
+        type: gameData.value.type,
+        picture: {
+            left: gameData.value.pic1,
+            right: gameData.value.pic2,
+            size: {
+                width: img1.width,
+                height: img1.height,
+            },
+        },
+    };
+    console.log("aa",result);
+    clickTrace.length = 0;
+    return result;
+};
 const drawCircle = (x, y) => {
     const canvas = canvasRef.value;
     const context = canvas.getContext("2d");

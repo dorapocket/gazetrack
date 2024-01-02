@@ -1,0 +1,28 @@
+{
+    "bathroom_woman":{
+        "social":{
+            "picture":["AB.jpg","A'B.png"],
+            "size":[1173,1760],
+            "different":{
+                "x":420,
+                "y":513
+            }
+        },
+        "social_nonsocial":{
+            "picture":["AB.jpg","AB'.png"],
+            "size":[1173,1760],
+            "different":{
+                "x":665,
+                "y":215
+            }
+        },
+        "nonsocial":{
+            "picture":["B.jpg","B'.png"],
+            "size":[1173,1760],
+            "different":{
+                "x":665,
+                "y":215
+            }
+        }
+    }
+}

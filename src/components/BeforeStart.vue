@@ -61,6 +61,7 @@
     const policyVisible = ref(false);
 
     const handleOk = () => {
+      document.documentElement.requestFullscreen()
         policyVisible.value = false;
       emit('button-clicked', true);
     };

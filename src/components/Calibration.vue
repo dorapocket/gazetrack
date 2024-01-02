@@ -71,11 +71,11 @@ const emit = getCurrentInstance().emit;
 var gazeData = [];
 var onlyTime = [];
 onMounted(async () => {
-    console.log("kkkk",window.webgazer)
+    
     resize()
     //start the webgazer tracker
     //start the webgazer tracker
-    await window.webgazer.setRegression('weightRidge') // ridge /* currently must set regression and tracker */
+    await window.webgazer.setRegression('ridge') // ridge /* currently must set regression and tracker */
         //.setTracker('clmtrackr')
         .setGazeListener(function(data, clock) {
           //   console.log(data); /* data is an object containing an x and y key which are the x and y prediction coordinates (no bounds limiting) */
