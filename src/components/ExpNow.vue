@@ -7,10 +7,12 @@
           <a-row class="grid-demo">
             <a-col :span="16" :offset="4">
               <a-card title="开始实验">
+                接下来将正式开始实验。您将看见9组图片，请在时间限制内找出图片中的不同点。
+                <div style="color:green;font-weight: 700;margin-top:20px">如果您准备好了，请点击开始😊</div>
                 <!-- <template #extra>
             <a-link>More</a-link>
         </template> -->
-                <div style="margin-top:40px"> <a-button @click="handleOk" type="primary">拿去</a-button></div>
+                <div style="margin-top:40px"> <a-button @click="handleOk" type="primary">开始</a-button></div>
 
 
               </a-card>
@@ -35,9 +37,9 @@ const publicPath = import.meta.env.BASE_URL;
 const childRef = ref()
 const build_random_experiment = () => {
   const experiment = []
-  // const demo = ["bathroom_woman","","woman_hair","woman_hair","woman_hair","woman_hair","woman_hair","woman_hair","woman_hair"]
+  // const demo = ["bathtub_boy","bathtub_boy","bathtub_boy","bathtub_boy","bathtub_boy","bathtub_boy","bathtub_boy","bathtub_boy","bathtub_boy"]
   let demo = Object.keys(different_config)
-  demo.push("bathroom_woman","bathroom_woman")
+  // demo.push("bathroom_woman","bathroom_woman")
   const all_data = chunk(shuffle(demo),3);
   // 
   // const all_data = chunk(shuffle(demo),3);
@@ -49,7 +51,7 @@ const build_random_experiment = () => {
   return shuffle(experiment)
 }
 const experiment = build_random_experiment();
-console.log(experiment)
+console.log("Pending Experiment:",experiment)
 const experiment_report = [];
 // defineProps({
 //   msg: String,
@@ -67,7 +69,7 @@ const handleOk = () => {
 };
 const saveReport = (dataFromChild) => {
   experiment_report.push(dataFromChild);
-  console.log("Next pic")
+  // console.log("Next ")
   run_experiment();
 }
 const continueExp = (dataFromChild) => {
@@ -76,12 +78,13 @@ const continueExp = (dataFromChild) => {
 const run_experiment = () => {
   current_exp += 1;
   if(current_exp==9){
-    console.log("All Settle",experiment_report);
+    console.log("All Settle! Result: ",experiment_report);
   }else{
     // debugger
     const current_exp_data = experiment[current_exp];
     const randomize_lr = Math.random() < 0.5 ? 0 : 1;
-    const scale = 500 / current_exp_data.exp.size[1];
+    const scale = 400 / current_exp_data.exp.size[1];
+    // console.log("Meta:",current_exp,current_exp_data)
     imageDifferentData.value = {
       pic1 :"/public/different/"+current_exp_data.dir+"/"+current_exp_data.exp.picture[randomize_lr],
       pic2 : "/public/different/"+current_exp_data.dir+"/"+current_exp_data.exp.picture[randomize_lr==0?1:0],

@@ -57,11 +57,13 @@ const clickTrace = [] //[{x:0,y:0,time:0,find:false,side:"left/right"}]
 let baseTime = 0;
 function setTrace(x,y,find,side){
     clickTrace.push({x,y,time:Date.now()-baseTime,find,side})
-    console.log({x,y,time:Date.now()-baseTime,find,side},baseTime,Date.now())
+    // console.log({x,y,time:Date.now()-baseTime,find,side},baseTime,Date.now())
 }
 const loadImages = (timer) => {
     const canvas = canvasRef.value;
     const context = canvas.getContext("2d");
+    context.fillStyle = '#ffffff';
+    context.fillRect(0, 0, canvas.width, canvas.height);
     let anotherload = false;
     const img1 = new Image();
     window.img1 = img1;
@@ -79,7 +81,7 @@ const loadImages = (timer) => {
     img1.height = img1.height * gameData.value.scale
         pic1base.x = (canvasWidth / 2 - img1.width) / 2;
         pic1base.y = (canvasHeight - img1.height) / 2;
-        console.log(img1.width, img1.height, gameData.value.scale)
+        // console.log(img1.width, img1.height, gameData.value.scale)
         context.drawImage(img1, pic1base.x, pic1base.y, img1.width, img1.height);
         
         if(anotherload){
@@ -145,6 +147,11 @@ const handleCanvasClick = (event) => {
 
     const inLeftImage = (x > pic1base.x && x < pic1base.x + img1.width) && (y > pic1base.y && y < pic1base.y + img1.height);
     const inRightImage = (x > pic2base.x && x < pic2base.x + img2.width) && (y > pic2base.y && y < pic2base.y + img2.height);
+    // if(inLeftImage){
+    //     console.log("AbsL (",x-pic1base.x,y-pic1base.y,")",gameData.value.pic1)
+    // }else if(inRightImage){
+    //     console.log("AbsR (",x-pic2base.x,y-pic2base.y,")",gameData.value.pic2)
+    // }
     let find = false;
     if (
         ((x > pic1base.x + gameData.value.differentx - sensity) && (x < pic1base.x + gameData.value.differentx + sensity) && (y > pic1base.y + gameData.value.differenty - sensity) && (y < pic1base.y + gameData.value.differenty + sensity)) ||
@@ -162,8 +169,11 @@ const handleCanvasClick = (event) => {
         setTrace(x-pic2base.x,y-pic2base.y,find,"right")
     }
         if (window.timer) clearInterval(window.timer);
-        emit('report-finish',buildResultReport());
-        emit('button-clicked', true);
+        setTimeout(()=>{
+            emit('report-finish',buildResultReport());
+            emit('button-clicked', true);
+        },500)
+
         // Modal.info({
         //     title: '结果',
         //     content: "你真厉害！🎊",
@@ -204,7 +214,7 @@ const buildResultReport = () => {
             },
         },
     };
-    console.log("aa",result);
+    // console.log("aa",result);
     clickTrace.length = 0;
     return result;
 };
