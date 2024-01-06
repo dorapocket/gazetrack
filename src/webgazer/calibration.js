@@ -61,9 +61,9 @@ function calcAccuracy() {
     // notification for the measurement process
 
     Modal.info({
-        title: 'Calculating measurement',
-        content: "Please don't move your mouse & stare at the middle dot for the next 5 seconds. This will allow us to calculate the accuracy of our predictions.",
-        okText:"Continue",
+        title: '校验',
+        content: "请不要移动您的鼠标 & 盯住中间的点5秒。我们将测量您的眼动准确度。",
+        okText:"确认",
 
         onOk:()=>{
             store_points_variable(); // start storing the prediction points
@@ -73,20 +73,20 @@ function calcAccuracy() {
                     var past50 = window.webgazer.getStoredPoints(); // retrieve the stored points
                     var precision_measurement = calculatePrecision(past50);
                     Modal.info({
-                        title: 'Measure',
+                        title: '校验结果',
                         content: ()=>h({
                             setup() {
                               return () => h('div', {class: 'info-modal-content'}, [
-                                h('div', {style: 'margin-bottom: 10px;'}, "Your accuracy measure is " + precision_measurement + "%"),
+                                h('div', {style: 'margin-bottom: 10px;'}, "您的校验准确度为：" + precision_measurement + "%"),
                                 h('div', {style: precision_measurement>measurement_limit?'color:green;':'color:red;'},[
-                                    h('span',{},precision_measurement>measurement_limit?'You can click button to continue.':'Please recalibrate!')
+                                    h('span',{},precision_measurement>measurement_limit?'您可以点击继续开始实验。':'您的准确度不足，请重新校准！')
                                 ]),
                               ])
                             },
                           })
                         ,
-                        okText:"Continue Experiment",
-                        cancelText:"Recalibrate",
+                        okText:"继续试验",
+                        cancelText:"重新校准",
                         draggable:true,
                         simple:false,
                         hideCancel:false,

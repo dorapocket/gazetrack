@@ -1,41 +1,42 @@
 <template>
-  <div>
+  <div style="width: 100%;height: 100%;">
     <BeforeStart v-if="step==0" @button-clicked="continueExp"/>
   <!-- <Calibration v-if="step==1" @button-clicked="continueExp"/>
   <ExpIntro v-if="step==2" @button-clicked="continueExp"/> -->
-  <FindDifferent v-if="step==3" :imageToFind="imageDifferentDataDemo" @report-finish="demoReport" @button-clicked="continueExp"/>
-  <ExpNow v-if="step==4"  @button-clicked="continueExp"/>
+  <FindDifferent v-if="step==1" :imageToFind="imageDifferentDataDemo" @report-finish="demoReport"/>
+  <ExpNow v-if="step==2"  @button-clicked="continueExp"/>
+  <Success v-if="step==3"  @button-clicked="continueExp"/>
   </div>
  
 </template>
 
 <script setup>
-import { inject, reactive, ref, toRefs, watch } from 'vue'
+import { inject, reactive, ref, toRefs, watch,provide } from 'vue'
 import BeforeStart from './BeforeStart.vue'
 import Calibration from './Calibration.vue'
 import ExpIntro from './ExpIntro.vue';
 import FindDifferent from './FindDifferent.vue'
 import ExpNow from './ExpNow.vue'
-// defineProps({
-//   msg: String,
-// })
-// const haha = inject("haha")
-// watch(haha,()=>{
-//   console.log(haha)
-// })
-const step = ref(4)
-const imageDifferentDataDemo = reactive({
-    pic1: "/public/pic1.png",
-    pic2: "/public/pic2.png",
-    differentx: 20,
-    differenty: 40,
-    scale : 1,
+import Success from './Success.vue'
+
+const step = ref(0)
+const scale = 400/1173
+const imageDifferentDataDemo = ref({
+    pic1: "/public/different/bathroom_woman/A'B.png",
+    pic2: "/public/different/bathroom_woman/AB.png",
+    differentx: 415*scale,
+    differenty: 508*scale,
+    scale : scale,
+    type:'social'
 })
+provide("imageToFind",imageDifferentDataDemo)
 const continueExp = (dataFromChild) => {
-      // step.value ++;
+  console.log("go")
+      step.value ++;
 };
 const demoReport = (report) => {
     console.log(report);
+    step.value ++;
 };
 </script>
 

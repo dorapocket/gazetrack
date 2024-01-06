@@ -24,7 +24,7 @@
       <a-layout-footer></a-layout-footer>
     </a-layout>
   </div>
-  <FindDifferent ref="childRef" v-else @report-finish="saveReport" @button-clicked="continueExp"/>
+  <FindDifferent ref="childRef" v-else @report-finish="saveReport"/>
 </template>
    
 <script setup>
@@ -33,6 +33,7 @@ import { ref, getCurrentInstance, reactive, provide } from 'vue'
 import BeforeStart from './BeforeStart.vue'
 import different_config from "../assets/different_config.json"
 import { chunk,shuffle } from 'lodash'
+
 const publicPath = import.meta.env.BASE_URL;
 const childRef = ref()
 const build_random_experiment = () => {
@@ -72,13 +73,12 @@ const saveReport = (dataFromChild) => {
   // console.log("Next ")
   run_experiment();
 }
-const continueExp = (dataFromChild) => {
-  return 0;
-}
 const run_experiment = () => {
   current_exp += 1;
   if(current_exp==9){
     console.log("All Settle! Result: ",experiment_report);
+    window.experiment_report = experiment_report;
+    emit('button-clicked', true);
   }else{
     // debugger
     const current_exp_data = experiment[current_exp];

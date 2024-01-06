@@ -16,6 +16,12 @@
       <a-form-item field="post" label="年龄">
         <a-input-number v-model="form.age" placeholder="年龄" :min="18" :max="50"/>
       </a-form-item>
+      <a-form-item field="name" label="身份证">
+        <a-input v-model="form.idcard" placeholder="请输入中国大陆身份证号码（我们将严格保密）"/>
+      </a-form-item>
+      <a-form-item field="name" label="手机">
+        <a-input v-model="form.phone" placeholder="请输入您的手机号..."/>
+      </a-form-item>
       <a-form-item>
         <a-button type="primary" @click="sendDataToParent">让我们开始吧</a-button>
       </a-form-item>
@@ -25,11 +31,11 @@
         </a-col>
       </a-row>
             
-      <a-modal v-model:visible="policyVisible" @ok="handleOk" @cancel="handleCancel" ok-text="I Agree" cancel-text="Cancel">
+      <a-modal v-model:visible="policyVisible" @ok="handleOk" @cancel="handleCancel" ok-text="继续" cancel-text="取消">
     <template #title>
-      规则
+      注意事项
     </template>
-    <div>你必须给我500块才能做实验</div>
+    <div>xxx</div>
   </a-modal>
     </div></a-layout-content>
       <a-layout-footer></a-layout-footer>
@@ -49,6 +55,8 @@
     const form = reactive({
       name: '',
       age:18,
+      idcard:"",
+      phone:""
     })
 
    const emit = getCurrentInstance().emit;
@@ -63,10 +71,11 @@
     const handleOk = () => {
       document.documentElement.requestFullscreen()
         policyVisible.value = false;
+      window.experimentee = form;
       emit('button-clicked', true);
     };
     const handleCancel = () => {
-        appContext.config.globalProperties.$message.warning('You have to agree policy to continue.')
+        appContext.config.globalProperties.$message.warning('您必须阅读并同意注意事项后才能继续')
      policyVisible.value = false;
     }
    </script>

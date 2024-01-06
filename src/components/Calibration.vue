@@ -22,9 +22,9 @@
       </div>
       <a-modal v-model:visible="modalVisible" @ok="handleOk" @cancel="handleCancel">
     <template #title>
-      Calibration1
+      眼动校准
     </template>
-    <div>Please click on each of the 9 points on the screen. You must click on each point 5 times till it goes yellow. This will calibrate your eye movements.</div>
+    <div>请注视并点击画面上显示的9个点. 您必须点击每个点5次直到该点变成黄色。 这一步骤会帮助我们校准您的眼动。</div>
   </a-modal>
    </div>
    

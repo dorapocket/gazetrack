@@ -119,7 +119,6 @@ const startTimer = () => {
             remainingTime.value--;
         } else {
             clearInterval(timer);
-            emit('report-finish',buildResultReport());
             Modal.error({
                 title: '时间到啦',
                 content: "没关系，下次继续加油哦！",
@@ -130,7 +129,7 @@ const startTimer = () => {
                     loadImages(startTimer);
                 },
                 onOk: () => {
-                    emit('button-clicked', true);
+                    emit('report-finish',buildResultReport(false));
                 }
             });
         }
@@ -170,8 +169,8 @@ const handleCanvasClick = (event) => {
     }
         if (window.timer) clearInterval(window.timer);
         setTimeout(()=>{
-            emit('report-finish',buildResultReport());
-            emit('button-clicked', true);
+            emit('report-finish',buildResultReport(true));
+            // emit('button-clicked', true);
         },500)
 
         // Modal.info({
@@ -200,8 +199,9 @@ const handleCanvasClick = (event) => {
     }
     
 };
-const buildResultReport = () => {
+const buildResultReport = (isfind) => {
     const result = {
+        find:isfind,
         clicks: JSON.parse(JSON.stringify(clickTrace)),
         timeCost: Date.now() - baseTime,
         type: gameData.value.type,
