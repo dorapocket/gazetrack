@@ -18,9 +18,13 @@ import ExpIntro from './ExpIntro.vue';
 import FindDifferent from './FindDifferent.vue'
 import ExpNow from './ExpNow.vue'
 import Success from './Success.vue'
+// TODO: ADD eyemove，鼠标
+// TODO: 加一个要点的东西
+// TODO: 加个框能看全就继续
+// TODO: 改指导语，鼠标辅助
 
 const step = ref(0)
-const scale = 400/1173
+const scale = 550/1173
 const imageDifferentDataDemo = ref({
     pic1: "/public/different/bathroom_woman/A'B.png",
     pic2: "/public/different/bathroom_woman/AB.png",

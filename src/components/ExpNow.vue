@@ -83,7 +83,7 @@ const run_experiment = () => {
     // debugger
     const current_exp_data = experiment[current_exp];
     const randomize_lr = Math.random() < 0.5 ? 0 : 1;
-    const scale = 400 / current_exp_data.exp.size[1];
+    const scale = 550 / current_exp_data.exp.size[1];
     // console.log("Meta:",current_exp,current_exp_data)
     imageDifferentData.value = {
       pic1 :"/public/different/"+current_exp_data.dir+"/"+current_exp_data.exp.picture[randomize_lr],

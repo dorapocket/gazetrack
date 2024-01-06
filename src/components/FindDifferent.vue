@@ -9,8 +9,8 @@
 <script setup>
 import { ref, onMounted, reactive, watch, getCurrentInstance, onBeforeMount, toRefs, onUpdated, inject } from 'vue';
 import { Modal, Button } from '@arco-design/web-vue';
-const canvasWidth = 1000;
-const canvasHeight = 500;
+const canvasWidth = 1300;
+const canvasHeight = 700;
 const canvasRef = ref(null);
 // const props = defineProps(["imageToFind"]);
 const remainingTime = ref(60);

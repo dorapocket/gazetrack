@@ -57,7 +57,7 @@ let error = ref("");
 
 function finish(){
     exitF();
-    window.location.href = "https://lgyserver.top"
+    window.location.href = "https://www.wjx.cn/vm/PiaVhAo.aspx#"
 }
 function exitF(){
     if (document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement) {

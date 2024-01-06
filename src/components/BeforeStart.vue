@@ -10,6 +10,9 @@
             <a-link>More</a-link>
         </template> -->
         <a-form :style="{marginTop:'20px',width:'90%'}" id="loginform" :model="form" :layout="layout">
+      <a-form-item field="post" label="编号">
+        <a-input-number v-model="form.id" placeholder="编号" :min="1" :max="1000"/>
+      </a-form-item>
       <a-form-item field="name" label="姓名">
         <a-input v-model="form.name" placeholder="请输入您的姓名..." />
       </a-form-item>
@@ -53,6 +56,7 @@
    // })
    const layout = ref('horizontal')
     const form = reactive({
+      id:1,
       name: '',
       age:18,
       idcard:"",
