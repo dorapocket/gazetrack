@@ -7,7 +7,7 @@
     </div>
 </template>
 <script setup>
-import { ref, onMounted, reactive, watch, getCurrentInstance, onBeforeMount, toRefs, onUpdated, inject } from 'vue';
+import { ref, onMounted, reactive, watch, getCurrentInstance, onBeforeMount, toRefs, onUpdated, inject, resolveComponent } from 'vue';
 import { Modal, Button } from '@arco-design/web-vue';
 const canvasWidth = 1300;
 const canvasHeight = 700;
@@ -38,25 +38,25 @@ let timer;
 // onBeforeMount(()=>{
 //     window.webgazer.end();
 // })
-onMounted(()=>{
+onMounted(() => {
     loadImages(startTimer);
 })
 // onUpdated(()=>{
 //     console.log('props.imageToFind has changed:', props.imageToFind);
 // })
-watch(gameData,()=>{
+watch(gameData, () => {
     loadImages(startTimer);
 })
-setInterval(()=>{
+setInterval(() => {
     // console.log(props.imageToFind)
-},1000)
+}, 1000)
 const pic1base = { x: 0, y: 0 }
 const pic2base = { x: 0, y: 0 }
 const sensity = 15
 const clickTrace = [] //[{x:0,y:0,time:0,find:false,side:"left/right"}]
 let baseTime = 0;
-function setTrace(x,y,find,side){
-    clickTrace.push({x,y,time:Date.now()-baseTime,find,side})
+function setTrace(x, y, find, side) {
+    clickTrace.push({ x, y, time: Date.now() - baseTime, find, side })
     // console.log({x,y,time:Date.now()-baseTime,find,side},baseTime,Date.now())
 }
 const loadImages = (timer) => {
@@ -64,55 +64,93 @@ const loadImages = (timer) => {
     const context = canvas.getContext("2d");
     context.fillStyle = '#ffffff';
     context.fillRect(0, 0, canvas.width, canvas.height);
-    let anotherload = false;
-    const img1 = new Image();
-    window.img1 = img1;
-    img1.src = gameData.value.pic1;
+    // let anotherload = false;
+    // 十字的中心坐标
+    var centerX = canvasWidth / 2;
+    var centerY = canvasHeight / 2;
+    // 十字臂的长度
+    var armLength = 16;
 
+    // 画横线
+    context.beginPath();
+    context.moveTo(centerX - armLength, centerY);
+    context.lineTo(centerX + armLength, centerY);
+    context.strokeStyle = "#000"; // 设置线条颜色
+    context.lineWidth = 3; // 设置线条宽度
+    context.stroke();
 
+    // 画竖线
+    context.beginPath();
+    context.moveTo(centerX, centerY - armLength);
+    context.lineTo(centerX, centerY + armLength);
+    context.stroke();
 
-    const img2 = new Image();
-    window.img2 = img2;
-    img2.src = gameData.value.pic2;
+    const promise1 = new Promise((resolve, reject) => {
+        const img1 = new Image();
+        window.img1 = img1;
+        img1.src = gameData.value.pic1;
 
-    
-    img1.onload = () => {
-        img1.width = img1.width * gameData.value.scale
-    img1.height = img1.height * gameData.value.scale
-        pic1base.x = (canvasWidth / 2 - img1.width) / 2;
-        pic1base.y = (canvasHeight - img1.height) / 2;
-        // console.log(img1.width, img1.height, gameData.value.scale)
-        context.drawImage(img1, pic1base.x, pic1base.y, img1.width, img1.height);
-        
-        if(anotherload){
-            timer()
-        }else{
-            anotherload=true;
-        }
-        // console.log(gameData)
-        // drawCircle(pic1base.x+gameData.differentx, pic1base.y+gameData.differenty);
-    };
+        img1.onload = () => {
+            img1.width = img1.width * gameData.value.scale
+            img1.height = img1.height * gameData.value.scale
+            pic1base.x = (canvasWidth / 2 - img1.width) / 2;
+            pic1base.y = (canvasHeight - img1.height) / 2;
+            // console.log(img1.width, img1.height, gameData.value.scale)
+            resolve()
+            // if(anotherload){
+            //     timer()
+            // }else{
+            //     anotherload=true;
+            // }
+            // console.log(gameData)
+            // drawCircle(pic1base.x+gameData.differentx, pic1base.y+gameData.differenty);
+        };
+    })
+    // context.drawImage(img1, pic1base.x, pic1base.y, img1.width, img1.height);
 
-    img2.onload = () => {
-        img2.width = img2.width * gameData.value.scale
-    img2.height = img2.height * gameData.value.scale
-        pic2base.x = canvasWidth / 2 + (canvasWidth / 2 - img2.width) / 2;
-        pic2base.y = (canvasHeight - img2.height) / 2;
-        context.drawImage(img2, pic2base.x, pic2base.y, img2.width, img2.height);
+    const promise2 = new Promise((resolve, reject) => {
+        const img2 = new Image();
+        window.img2 = img2;
+        img2.src = gameData.value.pic2;
 
-        if(anotherload){
-            timer()
-        }else{
-            anotherload=true;
-        }
-    };
+        img2.onload = () => {
+            img2.width = img2.width * gameData.value.scale
+            img2.height = img2.height * gameData.value.scale
+            pic2base.x = canvasWidth / 2 + (canvasWidth / 2 - img2.width) / 2;
+            pic2base.y = (canvasHeight - img2.height) / 2;
+            resolve()
+            // if(anotherload){
+            //     timer()
+            // }else{
+            //     anotherload=true;
+            // }
+        };
+        // context.drawImage(img2, pic2base.x, pic2base.y, img2.width, img2.height);
+    })
 
+    setTimeout(() => {
+        Promise.allSettled([promise1, promise2]).then(() => {
+            context.fillStyle = '#ffffff';
+            context.fillRect(0, 0, canvas.width, canvas.height);
+            context.drawImage(window.img1, pic1base.x, pic1base.y, window.img1.width, window.img1.height);
+            context.drawImage(window.img2, pic2base.x, pic2base.y, window.img2.width, window.img2.height);
+            timer();
+        }).catch((e) => { console.log(e) })
+    }, 3000)
 };
-
+const canvas = canvasRef.value;
+    canvas.addEventListener('mousemove', function(event) {
+        // 在这里处理鼠标移动时的操作，例如获取鼠标位置
+        window.mouseX = event.clientX - canvas.getBoundingClientRect().left;
+        window.mouseY = event.clientY - canvas.getBoundingClientRect().top;
+    });
+const mouse_move = []
 const startTimer = () => {
-    if(window.timer){
+    if (window.timer) {
         clearInterval(timer);
+        clearInterval(timer_100ms);
     }
+
     remainingTime.value = 60;
     timer = setInterval(() => {
         if (remainingTime.value > 0) {
@@ -123,19 +161,23 @@ const startTimer = () => {
                 title: '时间到啦',
                 content: "没关系，下次继续加油哦！",
                 okText: "下一组",
-                hideCancel:true,
+                hideCancel: true,
                 simple: true,
                 onCancel: () => {
                     loadImages(startTimer);
                 },
                 onOk: () => {
-                    emit('report-finish',buildResultReport(false));
+                    emit('report-finish', buildResultReport(false));
                 }
             });
         }
     }, 1000);
+    timer_100ms = setInterval(()=>{
+        mouse_move.push([window.mouseX,window.mouseY]);
+    },100)
     baseTime = Date.now();
-    window.timer = timer
+    window.timer = timer;
+    window.timer_100ms = timer_100ms;
 };
 const emit = getCurrentInstance().emit;
 const handleCanvasClick = (event) => {
@@ -161,17 +203,17 @@ const handleCanvasClick = (event) => {
         find = true;
         drawCircle(pic1base.x + gameData.value.differentx, pic1base.y + gameData.value.differenty);
         drawCircle(pic2base.x + gameData.value.differentx, pic2base.y + gameData.value.differenty);
-        if(inLeftImage){
-        setTrace(x-pic1base.x,y-pic1base.y,find,"left")
-    }
-    if(inRightImage){
-        setTrace(x-pic2base.x,y-pic2base.y,find,"right")
-    }
+        if (inLeftImage) {
+            setTrace(x - pic1base.x, y - pic1base.y, find, "left")
+        }
+        if (inRightImage) {
+            setTrace(x - pic2base.x, y - pic2base.y, find, "right")
+        }
         if (window.timer) clearInterval(window.timer);
-        setTimeout(()=>{
-            emit('report-finish',buildResultReport(true));
+        setTimeout(() => {
+            emit('report-finish', buildResultReport(true));
             // emit('button-clicked', true);
-        },500)
+        }, 500)
 
         // Modal.info({
         //     title: '结果',
@@ -185,24 +227,25 @@ const handleCanvasClick = (event) => {
         // });
     } else {
         const context = canvas.getContext("2d");
-        if(inLeftImage){
-        setTrace(x-pic1base.x,y-pic1base.y,find,"left")
-    }
-    if(inRightImage){
-        setTrace(x-pic2base.x,y-pic2base.y,find,"right")
-    }
+        if (inLeftImage) {
+            setTrace(x - pic1base.x, y - pic1base.y, find, "left")
+        }
+        if (inRightImage) {
+            setTrace(x - pic2base.x, y - pic2base.y, find, "right")
+        }
         drawX(x, y);
         setTimeout(() => {
-            context.drawImage(window.img1, (x - pic1base.x - 13)/gameData.value.scale, (y - pic1base.y - 13)/gameData.value.scale, 26/gameData.value.scale, 26/gameData.value.scale, x - 13, y - 13, 26, 26);
-            context.drawImage(window.img2, (x - pic2base.x - 13)/gameData.value.scale, (y - pic2base.y - 13)/gameData.value.scale, 26/gameData.value.scale, 26/gameData.value.scale, x - 13, y - 13, 26, 26);
+            context.drawImage(window.img1, (x - pic1base.x - 13) / gameData.value.scale, (y - pic1base.y - 13) / gameData.value.scale, 26 / gameData.value.scale, 26 / gameData.value.scale, x - 13, y - 13, 26, 26);
+            context.drawImage(window.img2, (x - pic2base.x - 13) / gameData.value.scale, (y - pic2base.y - 13) / gameData.value.scale, 26 / gameData.value.scale, 26 / gameData.value.scale, x - 13, y - 13, 26, 26);
         }, 500)
     }
-    
+
 };
 const buildResultReport = (isfind) => {
     const result = {
-        find:isfind,
+        find: isfind,
         clicks: JSON.parse(JSON.stringify(clickTrace)),
+        mouse_move:mouse_move,
         timeCost: Date.now() - baseTime,
         type: gameData.value.type,
         picture: {
@@ -260,7 +303,7 @@ const drawX = (x, y) => {
 };
 </script>
 
-<style>
+<style scoped>
 canvas {
     border: 1px solid #000;
 }
@@ -272,4 +315,5 @@ canvas {
     align-items: center;
     height: 100vh;
     background-color: #f0f0f0;
-}</style>
+}
+</style>

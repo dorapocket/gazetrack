@@ -1,11 +1,12 @@
 <template>
   <div style="width: 100%;height: 100%;">
-    <BeforeStart v-if="step==0" @button-clicked="continueExp"/>
+    <TestView v-if="step==0" @button-clicked="continueExp"/>
+    <BeforeStart v-if="step==1" @button-clicked="continueExp"/>
   <!-- <Calibration v-if="step==1" @button-clicked="continueExp"/>
   <ExpIntro v-if="step==2" @button-clicked="continueExp"/> -->
-  <FindDifferent v-if="step==1" :imageToFind="imageDifferentDataDemo" @report-finish="demoReport"/>
-  <ExpNow v-if="step==2"  @button-clicked="continueExp"/>
-  <Success v-if="step==3"  @button-clicked="continueExp"/>
+  <FindDifferent v-if="step==2" :imageToFind="imageDifferentDataDemo" @report-finish="demoReport"/>
+  <ExpNow v-if="step==3"  @button-clicked="continueExp"/>
+  <Success v-if="step==4"  @button-clicked="continueExp"/>
   </div>
  
 </template>
@@ -18,12 +19,10 @@ import ExpIntro from './ExpIntro.vue';
 import FindDifferent from './FindDifferent.vue'
 import ExpNow from './ExpNow.vue'
 import Success from './Success.vue'
+import TestView from './TestView.vue';
 // TODO: ADD eyemove，鼠标
-// TODO: 加一个要点的东西
-// TODO: 加个框能看全就继续
-// TODO: 改指导语，鼠标辅助
 
-const step = ref(0)
+const step = ref(2)
 const scale = 550/1173
 const imageDifferentDataDemo = ref({
     pic1: "/public/different/bathroom_woman/A'B.png",
