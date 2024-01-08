@@ -20,27 +20,30 @@ const flash = ref(false);
 const clicks = ref(0);
 let timer;
 
-// onMounted(async () => {
-//     await window.webgazer.setRegression('ridge') // ridge /* currently must set regression and tracker */
-//         //.setTracker('clmtrackr')
-//         .setGazeListener(function(data, clock) {
-//           //   console.log(data); /* data is an object containing an x and y key which are the x and y prediction coordinates (no bounds limiting) */
-//           //   console.log(clock); /* elapsed time in milliseconds since webgazer.begin() was called */
-//         })
-//         .saveDataAcrossSessions(true)
-//         .begin();
-//         window.webgazer.showPredictionPoints(true) /* shows a square every 100 milliseconds where current prediction is */
-//             .applyKalmanFilter(true); /* Kalman Filter defaults to on. Can be toggled by user. */
-
-//     loadImages();
-//     startTimer();
-// });
-// onBeforeMount(()=>{
-//     window.webgazer.end();
-// })
-onMounted(() => {
+onMounted(async () => {
+    if(window.eyegaze_enable){
+        await window.webgazer.setRegression('ridge') // ridge /* currently must set regression and tracker */
+        //.setTracker('clmtrackr')
+        // .setGazeListener(function(data, clock) {
+        //   //   console.log(data); /* data is an object containing an x and y key which are the x and y prediction coordinates (no bounds limiting) */
+        //   //   console.log(clock); /* elapsed time in milliseconds since webgazer.begin() was called */
+        // })
+        .saveDataAcrossSessions(true)
+        .begin();
+        // window.webgazer.showPredictionPoints(true) /* shows a square every 100 milliseconds where current prediction is */
+        //     .applyKalmanFilter(true); /* Kalman Filter defaults to on. Can be toggled by user. */
+    }
+    
+    
     loadImages(startTimer);
+});
+onBeforeMount(()=>{
+    if(window.eyegaze_enable){
+        window.webgazer.pause();
+    }
+    
 })
+
 // onUpdated(()=>{
 //     console.log('props.imageToFind has changed:', props.imageToFind);
 // })
@@ -138,17 +141,23 @@ const loadImages = (timer) => {
         }).catch((e) => { console.log(e) })
     }, 3000)
 };
-const canvas = canvasRef.value;
-    canvas.addEventListener('mousemove', function(event) {
-        // 在这里处理鼠标移动时的操作，例如获取鼠标位置
-        window.mouseX = event.clientX - canvas.getBoundingClientRect().left;
-        window.mouseY = event.clientY - canvas.getBoundingClientRect().top;
-    });
+document.addEventListener('mousemove', function (event) {
+    // 在这里处理鼠标移动时的操作，例如获取鼠标位置
+    const canvas = canvasRef.value;
+    window.mouseX = event.clientX - canvas.getBoundingClientRect().left;
+    window.mouseY = event.clientY - canvas.getBoundingClientRect().top;
+});
+
 const mouse_move = []
+const eye_move = []
 const startTimer = () => {
     if (window.timer) {
         clearInterval(timer);
         clearInterval(timer_100ms);
+        if(window.eyegaze_enable){
+                    window.webgazer.pause();
+        }
+
     }
 
     remainingTime.value = 60;
@@ -172,9 +181,22 @@ const startTimer = () => {
             });
         }
     }, 1000);
-    timer_100ms = setInterval(()=>{
-        mouse_move.push([window.mouseX,window.mouseY]);
-    },100)
+    if(window.eyegaze_enable){
+            window.webgazer.resume();
+    }
+
+    timer_100ms = setInterval(() => {
+        const canvas = canvasRef.value;
+        mouse_move.push([window.mouseX, window.mouseY]);
+        if(window.eyegaze_enable){
+            let pre = window.webgazer.getCurrentPrediction();
+            eye_move.push([pre.x - canvas.getBoundingClientRect().left,pre.y- canvas.getBoundingClientRect().top])
+            console.log("Eye:",pre.x - canvas.getBoundingClientRect().left,pre.y- canvas.getBoundingClientRect().top)
+        }
+        console.log("Mouse:",window.mouseX,window.mouseY)
+        
+    }, 100)
+    
     baseTime = Date.now();
     window.timer = timer;
     window.timer_100ms = timer_100ms;
@@ -245,7 +267,7 @@ const buildResultReport = (isfind) => {
     const result = {
         find: isfind,
         clicks: JSON.parse(JSON.stringify(clickTrace)),
-        mouse_move:mouse_move,
+        mouse_move: mouse_move,
         timeCost: Date.now() - baseTime,
         type: gameData.value.type,
         picture: {
