@@ -1,7 +1,7 @@
 {
     "bathroom_woman":{
         "social":{
-            "picture":["AB.png","A'B.png"],
+            "picture":["AB.jpg","A'B.jpg"],
             "size":[1173,1173],
             "different":{
                 "x":415,
@@ -9,7 +9,7 @@
             }
         },
         "social_nonsocial":{
-            "picture":["AB.png","AB'.png"],
+            "picture":["AB.jpg","AB'.jpg"],
             "size":[1173,1173],
             "different":{
                 "x":665,
@@ -17,7 +17,7 @@
             }
         },
         "nonsocial":{
-            "picture":["B.png","B'.png"],
+            "picture":["B.jpg","B'.jpg"],
             "size":[1173,1173],
             "different":{
                 "x":665,
@@ -27,7 +27,7 @@
     },
     "bathtub_boy":{
         "social":{
-            "picture":["AB.png","A'B.png"],
+            "picture":["AB.jpg","A'B.jpg"],
             "size":[924,924],
             "different":{
                 "x":280,
@@ -35,7 +35,7 @@
             }
         },
         "social_nonsocial":{
-            "picture":["AB.png","AB'.png"],
+            "picture":["AB.jpg","AB'.jpg"],
             "size":[924,924],
             "different":{
                 "x":644,
@@ -43,7 +43,7 @@
             }
         },
         "nonsocial":{
-            "picture":["B.png","B'.png"],
+            "picture":["B.jpg","B'.jpg"],
             "size":[924,924],
             "different":{
                 "x":644,
@@ -53,7 +53,7 @@
     },
     "bicycle_girl":{
         "social":{
-            "picture":["AB.png","A'B.png"],
+            "picture":["AB.jpg","A'B.jpg"],
             "size":[924,924],
             "different":{
                 "x":335,
@@ -61,7 +61,7 @@
             }
         },
         "social_nonsocial":{
-            "picture":["AB.png","AB'.png"],
+            "picture":["AB.jpg","AB'.jpg"],
             "size":[924,924],
             "different":{
                 "x":564,
@@ -69,7 +69,7 @@
             }
         },
         "nonsocial":{
-            "picture":["B.png","B'.png"],
+            "picture":["B.jpg","B'.jpg"],
             "size":[924,924],
             "different":{
                 "x":564,
@@ -79,7 +79,7 @@
     },
     "dining_girl":{
         "social":{
-            "picture":["AB.png","A'B.png"],
+            "picture":["AB.jpg","A'B.jpg"],
             "size":[1023,1023],
             "different":{
                 "x":382,
@@ -87,7 +87,7 @@
             }
         },
         "social_nonsocial":{
-            "picture":["AB.png","AB'.png"],
+            "picture":["AB.jpg","AB'.jpg"],
             "size":[1023,1023],
             "different":{
                 "x":898,
@@ -95,7 +95,7 @@
             }
         },
         "nonsocial":{
-            "picture":["B.png","B'.png"],
+            "picture":["B.jpg","B'.jpg"],
             "size":[1023,1023],
             "different":{
                 "x":898,
@@ -105,7 +105,7 @@
     },
     "laundry_man":{
         "social":{
-            "picture":["AB.png","A'B.png"],
+            "picture":["AB.jpg","A'B.jpg"],
             "size":[1009,1009],
             "different":{
                 "x":592,
@@ -113,7 +113,7 @@
             }
         },
         "social_nonsocial":{
-            "picture":["AB.png","AB'.png"],
+            "picture":["AB.jpg","AB'.jpg"],
             "size":[1009,1009],
             "different":{
                 "x":260,
@@ -121,7 +121,7 @@
             }
         },
         "nonsocial":{
-            "picture":["B.png","B'.png"],
+            "picture":["B.jpg","B'.jpg"],
             "size":[1009,1009],
             "different":{
                 "x":260,
@@ -131,7 +131,7 @@
     },
     "parking_man":{
         "social":{
-            "picture":["AB.png","A'B.png"],
+            "picture":["AB.jpg","A'B.jpg"],
             "size":[884,884],
             "different":{
                 "x":494,
@@ -139,7 +139,7 @@
             }
         },
         "social_nonsocial":{
-            "picture":["AB.png","AB'.png"],
+            "picture":["AB.jpg","AB'.jpg"],
             "size":[884,884],
             "different":{
                 "x":583,
@@ -147,7 +147,7 @@
             }
         },
         "nonsocial":{
-            "picture":["B.png","B'.png"],
+            "picture":["B.jpg","B'.jpg"],
             "size":[884,884],
             "different":{
                 "x":583,
@@ -157,7 +157,7 @@
     },
     "playground_boy":{
         "social":{
-            "picture":["AB.png","A'B.png"],
+            "picture":["AB.jpg","A'B.jpg"],
             "size":[749,749],
             "different":{
                 "x":302,
@@ -165,7 +165,7 @@
             }
         },
         "social_nonsocial":{
-            "picture":["AB.png","AB'.png"],
+            "picture":["AB.jpg","AB'.jpg"],
             "size":[749,749],
             "different":{
                 "x":485,
@@ -173,7 +173,7 @@
             }
         },
         "nonsocial":{
-            "picture":["B.png","B'.png"],
+            "picture":["B.jpg","B'.jpg"],
             "size":[749,749],
             "different":{
                 "x":485,
@@ -183,7 +183,7 @@
     },
     "sea_man":{
         "social":{
-            "picture":["AB.png","A'B.png"],
+            "picture":["AB.jpg","A'B.jpg"],
             "size":[924,924],
             "different":{
                 "x":324,
@@ -191,7 +191,7 @@
             }
         },
         "social_nonsocial":{
-            "picture":["AB.png","AB'.png"],
+            "picture":["AB.jpg","AB'.jpg"],
             "size":[924,924],
             "different":{
                 "x":785,
@@ -199,7 +199,7 @@
             }
         },
         "nonsocial":{
-            "picture":["B.png","B'.png"],
+            "picture":["B.jpg","B'.jpg"],
             "size":[924,924],
             "different":{
                 "x":785,
@@ -209,7 +209,7 @@
     },
     "slide_boy":{
         "social":{
-            "picture":["AB.png","A'B.png"],
+            "picture":["AB.jpg","A'B.jpg"],
             "size":[938,938],
             "different":{
                 "x":113,
@@ -217,7 +217,7 @@
             }
         },
         "social_nonsocial":{
-            "picture":["AB.png","AB'.png"],
+            "picture":["AB.jpg","AB'.jpg"],
             "size":[938,938],
             "different":{
                 "x":405,
@@ -225,7 +225,7 @@
             }
         },
         "nonsocial":{
-            "picture":["B.png","B'.png"],
+            "picture":["B.jpg","B'.jpg"],
             "size":[938,938],
             "different":{
                 "x":405,
