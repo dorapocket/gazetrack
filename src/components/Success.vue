@@ -99,6 +99,7 @@ function uploadDataToServer(data) {
         });
 }
 onMounted(() => {
+    indexedDB.deleteDatabase('localforage');
     if (!window.experiment_report) {
         stat.value = "error"
         error.value = "No experiment report found."

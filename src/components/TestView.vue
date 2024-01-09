@@ -5,9 +5,10 @@
 </template>
 <script setup>
 import { Modal, Button } from '@arco-design/web-vue';
-import { onMounted,getCurrentInstance } from 'vue';
+import { onMounted, getCurrentInstance } from 'vue';
 const emit = getCurrentInstance().emit;
 onMounted(() => {
+indexedDB.deleteDatabase('localforage');
     Modal.info({
         title: '分辨率测试',
         content: "在实验开始之前，请先确认您的显示器分辨率是否满足要求。请问您是否能完全看见黑色矩形框？",

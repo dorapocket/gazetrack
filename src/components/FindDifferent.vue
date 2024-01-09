@@ -1,10 +1,12 @@
 <template>
-    <div id="different-container" style="width: 100vw;height: 100vh;">
-        <div style="position: absolute; margin: 10px 30px; top:0px; right:20px">
-            <h1><icon-clock-circle style="margin-right: 10px;" /> {{ remainingTime }}s</h1>
+    <a-spin :loading="loading" tip="请稍后...">
+        <div id="different-container" style="width: 100vw;height: 100vh;">
+            <div style="position: absolute; margin: 10px 30px; top:0px; right:20px">
+                <h1><icon-clock-circle style="margin-right: 10px;" /> {{ remainingTime }}s</h1>
+            </div>
+            <canvas id="cvs" ref="canvasRef" :width="canvasWidth" :height="canvasHeight" @click="handleCanvasClick"></canvas>
         </div>
-        <canvas ref="canvasRef" :width="canvasWidth" :height="canvasHeight" @click="handleCanvasClick"></canvas>
-    </div>
+    </a-spin>
 </template>
 <script setup>
 import { ref, onMounted, reactive, watch, getCurrentInstance, onBeforeMount, toRefs, onUpdated, inject, resolveComponent } from 'vue';
@@ -19,29 +21,48 @@ const gameData = inject('imageToFind');
 const flash = ref(false);
 const clicks = ref(0);
 let timer;
+function hideCamera() {
+    document.getElementById("webgazerVideoContainer").style.display = "none";
+}
+const loading = ref(true)
 
 onMounted(async () => {
-    if(window.eyegaze_enable){
-        await window.webgazer.setRegression('ridge') // ridge /* currently must set regression and tracker */
-        //.setTracker('clmtrackr')
-        // .setGazeListener(function(data, clock) {
-        //   //   console.log(data); /* data is an object containing an x and y key which are the x and y prediction coordinates (no bounds limiting) */
-        //   //   console.log(clock); /* elapsed time in milliseconds since webgazer.begin() was called */
-        // })
-        .saveDataAcrossSessions(true)
-        .begin();
-        // window.webgazer.showPredictionPoints(true) /* shows a square every 100 milliseconds where current prediction is */
-        //     .applyKalmanFilter(true); /* Kalman Filter defaults to on. Can be toggled by user. */
+    if (window.eyegaze_enable) {
+        try {
+            await window.webgazer.setRegression('ridge') // ridge /* currently must set regression and tracker */
+                // .setTracker('clmtrackr')
+                // .setGazeListener(function(data, clock) {
+                //     console.log(data); /* data is an object containing an x and y key which are the x and y prediction coordinates (no bounds limiting) */
+                //     console.log(clock); /* elapsed time in milliseconds since webgazer.begin() was called */
+                // })
+                .saveDataAcrossSessions(true)
+                .begin()
+            hideCamera()
+            loading.value = false;
+
+            window.webgazer.showPredictionPoints(false) /* shows a square every 100 milliseconds where current prediction is */
+                .applyKalmanFilter(true); /* Kalman Filter defaults to on. Can be toggled by user. */
+        } catch (e) {
+            console.log(e);
+            Modal.error({
+                title: '错误',
+                content: "加载时出现问题，请联系主试。" + e,
+                okText: "刷新",
+                hideCancel: true,
+                simple: true,
+                onOk: () => {
+                    location.reload();
+                }
+            });
+        }
     }
-    
-    
     loadImages(startTimer);
 });
-onBeforeMount(()=>{
-    if(window.eyegaze_enable){
+onBeforeMount(() => {
+    if (window.eyegaze_enable) {
         window.webgazer.pause();
     }
-    
+
 })
 
 // onUpdated(()=>{
@@ -141,23 +162,30 @@ const loadImages = (timer) => {
         }).catch((e) => { console.log(e) })
     }, 3000)
 };
-document.addEventListener('mousemove', function (event) {
-    // 在这里处理鼠标移动时的操作，例如获取鼠标位置
-    const canvas = canvasRef.value;
-    window.mouseX = event.clientX - canvas.getBoundingClientRect().left;
-    window.mouseY = event.clientY - canvas.getBoundingClientRect().top;
-});
 
 const mouse_move = []
 const eye_move = []
+window.handleMouseMove = function (event) {
+    // const canvas = document.getElementById("cvs")
+    window.mouseX = event.clientX - window.cvs.getBoundingClientRect().left;
+    window.mouseY = event.clientY - window.cvs.getBoundingClientRect().top;
+}
 const startTimer = () => {
     if (window.timer) {
-        clearInterval(timer);
-        clearInterval(timer_100ms);
-        if(window.eyegaze_enable){
-                    window.webgazer.pause();
+        if(window.timer){
+clearInterval(window.timer);
         }
-
+        
+        if(window.timer_100ms){
+            clearInterval(window.timer_100ms);
+        }
+        
+        if (window.eyegaze_enable) {
+            window.webgazer.pause();
+        }
+        const canvas = document.getElementById("cvs")
+        window.cvs = canvas
+        canvas.removeEventListener('mousemove', window.handleMouseMove);
     }
 
     remainingTime.value = 60;
@@ -181,22 +209,31 @@ const startTimer = () => {
             });
         }
     }, 1000);
-    if(window.eyegaze_enable){
-            window.webgazer.resume();
+    if (window.eyegaze_enable) {
+        window.webgazer.resume();
     }
+    // const canvas = canvasRef.value;
+    window.cvs.addEventListener('mousemove', window.handleMouseMove);
 
     timer_100ms = setInterval(() => {
-        const canvas = canvasRef.value;
-        mouse_move.push([window.mouseX, window.mouseY]);
-        if(window.eyegaze_enable){
-            let pre = window.webgazer.getCurrentPrediction();
-            eye_move.push([pre.x - canvas.getBoundingClientRect().left,pre.y- canvas.getBoundingClientRect().top])
-            console.log("Eye:",pre.x - canvas.getBoundingClientRect().left,pre.y- canvas.getBoundingClientRect().top)
+        const canvas = window.cvs;
+        mouse_move.push([window.mouseX || 0, window.mouseY || 0]);
+        if (window.eyegaze_enable) {
+            window.webgazer.getCurrentPrediction().then((pre) => {
+                // console.log("Eye",res);
+                let x = (((pre.x || 0) - canvas.getBoundingClientRect().left) || 0).toFixed(1)
+                let y = ((pre.y || 0) - (canvas.getBoundingClientRect().top || 0)).toFixed(1)
+                // console.log("Eye:", , )
+                eye_move.push(x||0,y||0)
+            });
+            // eye_move.push([pre.x - canvas.getBoundingClientRect().left,pre.y- canvas.getBoundingClientRect().top])
+
+            // console.log("Eye:",pre)
         }
-        console.log("Mouse:",window.mouseX,window.mouseY)
-        
+        // console.log("Mouse:", window.mouseX, window.mouseY)
+
     }, 100)
-    
+
     baseTime = Date.now();
     window.timer = timer;
     window.timer_100ms = timer_100ms;
@@ -232,6 +269,7 @@ const handleCanvasClick = (event) => {
             setTrace(x - pic2base.x, y - pic2base.y, find, "right")
         }
         if (window.timer) clearInterval(window.timer);
+        if (window.timer_100ms) clearInterval(window.timer_100ms);
         setTimeout(() => {
             emit('report-finish', buildResultReport(true));
             // emit('button-clicked', true);
@@ -279,7 +317,7 @@ const buildResultReport = (isfind) => {
             },
         },
     };
-    // console.log("aa",result);
+    console.log("aa",result);
     clickTrace.length = 0;
     return result;
 };
@@ -328,6 +366,10 @@ const drawX = (x, y) => {
 <style scoped>
 canvas {
     border: 1px solid #000;
+}
+
+#webgazerVideoContainer {
+    display: none !important;
 }
 
 #different-container {

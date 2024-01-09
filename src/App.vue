@@ -5,7 +5,7 @@ import webgazer from 'webgazer'
 
 if(window.eyegaze_enable){
   window.webgazer = webgazer
-console.log("ok!!!!!!!",webgazer)
+  console.log("ok!!!!!!!",webgazer)
 }
 
 // const haha = ref({a:1})
