@@ -59,6 +59,7 @@ function finish(){
     exitF();
     window.location.href = "https://www.wjx.cn/vm/PiaVhAo.aspx#"
 }
+
 function exitF(){
     if (document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement) {
   // 退出全屏
@@ -95,11 +96,18 @@ function uploadDataToServer(data) {
             console.error('Error uploading data:', error.message);
             error.value = error.message+""
             stat.value = "error"
-
         });
 }
 onMounted(() => {
     indexedDB.deleteDatabase('localforage');
+    window.experimentee = {
+  id: 1,
+  name: 'test',
+  age: 18,
+  idcard: "test",
+  phone: "test"
+}
+window.experiment_report = {}
     if (!window.experiment_report) {
         stat.value = "error"
         error.value = "No experiment report found."

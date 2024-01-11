@@ -20,21 +20,20 @@ import FindDifferent from './FindDifferent.vue'
 import ExpNow from './ExpNow.vue'
 import Success from './Success.vue'
 import TestView from './TestView.vue';
-// TODO: ADD eyemove，鼠标
 
 const step = ref(0)
-const scale = 550/1173
+const scale = 550/923
 const imageDifferentDataDemo = ref({
-    pic1: "/public/different/bathroom_woman/A'B.png",
-    pic2: "/public/different/bathroom_woman/AB.png",
-    differentx: 415*scale,
-    differenty: 508*scale,
+    pic1: "/public/different/demo/AB.jpg",
+    pic2: "/public/different/demo/A'B.jpg",
+    differentx: 333*scale,
+    differenty: 855*scale,
     scale : scale,
     type:'social'
 })
 provide("imageToFind",imageDifferentDataDemo)
 const continueExp = (dataFromChild) => {
-  console.log("go")
+  // console.log("go")
       step.value ++;
 };
 const demoReport = (report) => {

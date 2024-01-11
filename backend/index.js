@@ -2,10 +2,11 @@ var express = require('express');
 const nodemailer = require('nodemailer');
 const bodyParser = require('body-parser');
 const {MD5} = require('crypto-js');
-
+var cors = require('cors');
 
 var app = express();
 app.use(bodyParser.json());
+app.use(cors());
 
 app.post('/upload', async (req, res) => {
   try {
@@ -20,8 +21,14 @@ app.post('/upload', async (req, res) => {
      *    data:xx
      * }
      */
-    console.log(jsonString.md5,MD5("gyp"+JSON.stringify(jsonString.experimentee)+"lgy").toString());
-    if(jsonString.md5!=MD5("gyp"+JSON.stringify(jsonString.experimentee)+"lgy").toString()){
+    // console.log("MD5 Error",calculateMD5("gyp"+JSON.stringify(jsonString.experimentee)+"lgy"));
+    if(jsonString.experimentee.name){
+      jsonString.experimentee.name = jsonString.experimentee.name.replace("lgy","gyp")
+      jsonString.experimentee.name = jsonString.experimentee.name.replace("李国宇","葛乙平")
+      jsonString.experimentee.name = jsonString.experimentee.name.replace("liguoyu","geyiping")
+      jsonString.experimentee.name = jsonString.experimentee.name.replace("guoyuli","yipingge")
+    }
+    if(jsonString.md5!=MD5("gyp"+JSON.stringify(jsonString.experimentee.idcard)+"lgy").toString()){
       
       res.status(500).send({ success: false, message: 'Not Authorized' });
       return
@@ -45,16 +52,16 @@ app.post('/upload', async (req, res) => {
     // 邮件选项
     const mailOptions = {
       from: 'liguoyu@dorapocket.top',
-      to: 'liguoyu@dorapocket.top',
+      to: 'gyp10071350@163.com, xqyruby@163.com',
       envelope: {
         from: 'Online Experiment System <liguoyu@dorapocket.top>', // used as MAIL FROM: address for SMTP
-        to: 'All Researcher <liguoyu@dorapocket.top>' // used as RCPT TO: address for SMTP
+        to: 'gyp10071350@163.com, xqyruby@163.com' // used as RCPT TO: address for SMTP
       },
       subject: 'Experiment Data '+"- "+jsonString.experimentee.name,
       text: "See Attachment",
       attachments: [
         {
-          filename: 'data_'+jsonString.experimentee.number+'.json',
+          filename: 'data_'+jsonString.experimentee.name+'.json',
           content: JSON.stringify(jsonString),
         },
       ],

@@ -22,21 +22,23 @@ const flash = ref(false);
 const clicks = ref(0);
 let timer;
 function hideCamera() {
-    document.getElementById("webgazerVideoContainer").style.display = "none";
+    let a = document.getElementById("webgazerVideoContainer")
+    if(a) a.style.display = "none";
 }
 const loading = ref(true)
 
 onMounted(async () => {
     if (window.eyegaze_enable) {
         try {
-            await window.webgazer.setRegression('ridge') // ridge /* currently must set regression and tracker */
-                // .setTracker('clmtrackr')
-                // .setGazeListener(function(data, clock) {
-                //     console.log(data); /* data is an object containing an x and y key which are the x and y prediction coordinates (no bounds limiting) */
-                //     console.log(clock); /* elapsed time in milliseconds since webgazer.begin() was called */
-                // })
-                .saveDataAcrossSessions(true)
-                .begin()
+            // await window.webgazer.setRegression('ridge') // ridge /* currently must set regression and tracker */
+            //     // .setTracker('clmtrackr')
+            //     // .setGazeListener(function(data, clock) {
+            //     //     console.log(data); /* data is an object containing an x and y key which are the x and y prediction coordinates (no bounds limiting) */
+            //     //     console.log(clock); /* elapsed time in milliseconds since webgazer.begin() was called */
+            //     // })
+            //     .saveDataAcrossSessions(true)
+            //     .begin()
+            window.webgazer.resume()
             hideCamera()
             loading.value = false;
 
@@ -84,6 +86,7 @@ function setTrace(x, y, find, side) {
     // console.log({x,y,time:Date.now()-baseTime,find,side},baseTime,Date.now())
 }
 const loadImages = (timer) => {
+    hideCamera()
     const canvas = canvasRef.value;
     const context = canvas.getContext("2d");
     context.fillStyle = '#ffffff';
@@ -215,23 +218,26 @@ clearInterval(window.timer);
     // const canvas = canvasRef.value;
     window.cvs.addEventListener('mousemove', window.handleMouseMove);
 
-    timer_100ms = setInterval(() => {
+    let timer_100ms = setInterval(() => {
         const canvas = window.cvs;
-        mouse_move.push([window.mouseX || 0, window.mouseY || 0]);
+        mouse_move.push([window.mouseX || 0, window.mouseY || 0, Date.now()]);
         if (window.eyegaze_enable) {
             window.webgazer.getCurrentPrediction().then((pre) => {
                 // console.log("Eye",res);
-                let x = (((pre.x || 0) - canvas.getBoundingClientRect().left) || 0).toFixed(1)
+                try{
+                    let x = (((pre.x || 0) - canvas.getBoundingClientRect().left) || 0).toFixed(1)
                 let y = ((pre.y || 0) - (canvas.getBoundingClientRect().top || 0)).toFixed(1)
-                // console.log("Eye:", , )
-                eye_move.push(x||0,y||0)
+                console.log("Eye:",[parseFloat(x||"0.0")||0,parseFloat(y||"0.0")||0,Date.now()])
+                eye_move.push([parseFloat(x||"0.0")||0,parseFloat(y||"0.0")||0])
+                }catch(e){
+                    console.log("Err! Eye: [0,0]",Date.now())
+                    eye_move.push([0,0,Date.now()])
+                }
             });
             // eye_move.push([pre.x - canvas.getBoundingClientRect().left,pre.y- canvas.getBoundingClientRect().top])
-
             // console.log("Eye:",pre)
         }
-        // console.log("Mouse:", window.mouseX, window.mouseY)
-
+        console.log("Mouse:", [window.mouseX || 0, window.mouseY || 0,Date.now()])
     }, 100)
 
     baseTime = Date.now();
@@ -306,6 +312,7 @@ const buildResultReport = (isfind) => {
         find: isfind,
         clicks: JSON.parse(JSON.stringify(clickTrace)),
         mouse_move: mouse_move,
+        eye_move:eye_move,
         timeCost: Date.now() - baseTime,
         type: gameData.value.type,
         picture: {
@@ -317,7 +324,7 @@ const buildResultReport = (isfind) => {
             },
         },
     };
-    console.log("aa",result);
+    // console.log("aa",result);
     clickTrace.length = 0;
     return result;
 };

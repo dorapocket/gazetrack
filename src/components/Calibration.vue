@@ -117,7 +117,7 @@ onMounted(async () => {
 })
 window.saveDataAcrossSessions = true;
 onBeforeUnmount(() => {
-    window.webgazer.end();
+    window.webgazer.pause();
 })
 
 //  exporting data to .csv

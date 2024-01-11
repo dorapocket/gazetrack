@@ -8,6 +8,8 @@
             <a-col :span="16" :offset="4">
               <a-card title="开始实验">
                 接下来将正式开始实验。您将看见9组图片，请在时间限制内找出图片中的不同点。
+                <div style="color:black;font-weight: 700;margin-top:20px">请尽量使用鼠标辅助显示您的注视位置。</div>
+                <video id="introv" src="../assets/demo.mp4" muted autoplay loop></video>
                 <div style="color:green;font-weight: 700;margin-top:20px">如果您准备好了，请点击开始😊</div>
                 <!-- <template #extra>
             <a-link>More</a-link>
@@ -104,6 +106,9 @@ const run_experiment = () => {
    
    
 <style scoped>
+#introv {
+  width:600px;
+}
 .layout-demo :deep(.arco-layout-header),
 .layout-demo :deep(.arco-layout-footer),
 .layout-demo :deep(.arco-layout-sider-children),
