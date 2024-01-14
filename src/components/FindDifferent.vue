@@ -332,9 +332,9 @@ const drawCircle = (x, y) => {
     const canvas = canvasRef.value;
     const context = canvas.getContext("2d");
     context.beginPath();
-    context.arc(x, y, 10, 0, 2 * Math.PI);
+    context.arc(x, y, 15, 0, 2 * Math.PI);
     context.strokeStyle = "green";
-    context.lineWidth = 3;
+    context.lineWidth = 4;
     context.stroke();
 };
 
@@ -349,7 +349,7 @@ const drawX = (x, y) => {
         context.moveTo(x - 10, y + 10);
         context.lineTo(x + 10, y - 10);
         context.strokeStyle = "white";
-        context.lineWidth = 3;
+        context.lineWidth = 4;
         context.stroke();
     };
 
