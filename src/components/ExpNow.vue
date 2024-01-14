@@ -8,6 +8,8 @@
             <a-col :span="16" :offset="4">
               <a-card title="开始实验">
                 接下来将正式开始实验。您将看见9组图片，请在时间限制内找出图片中的不同点。
+                <div style="color:black;font-weight: 700;margin-top:20px">请尽量使用鼠标辅助显示您的注视位置。</div>
+                <video id="introv" src="../assets/demo.mp4" muted autoplay loop></video>
                 <div style="color:green;font-weight: 700;margin-top:20px">如果您准备好了，请点击开始😊</div>
                 <!-- <template #extra>
             <a-link>More</a-link>
@@ -24,7 +26,7 @@
       <a-layout-footer></a-layout-footer>
     </a-layout>
   </div>
-  <FindDifferent ref="childRef" v-else @report-finish="saveReport" @button-clicked="continueExp"/>
+  <FindDifferent ref="childRef" v-else @report-finish="saveReport"/>
 </template>
    
 <script setup>
@@ -33,6 +35,7 @@ import { ref, getCurrentInstance, reactive, provide } from 'vue'
 import BeforeStart from './BeforeStart.vue'
 import different_config from "../assets/different_config.json"
 import { chunk,shuffle } from 'lodash'
+
 const publicPath = import.meta.env.BASE_URL;
 const childRef = ref()
 const build_random_experiment = () => {
@@ -72,18 +75,17 @@ const saveReport = (dataFromChild) => {
   // console.log("Next ")
   run_experiment();
 }
-const continueExp = (dataFromChild) => {
-  return 0;
-}
 const run_experiment = () => {
   current_exp += 1;
   if(current_exp==9){
     console.log("All Settle! Result: ",experiment_report);
+    window.experiment_report = experiment_report;
+    emit('button-clicked', true);
   }else{
     // debugger
     const current_exp_data = experiment[current_exp];
     const randomize_lr = Math.random() < 0.5 ? 0 : 1;
-    const scale = 400 / current_exp_data.exp.size[1];
+    const scale = 550 / current_exp_data.exp.size[1];
     // console.log("Meta:",current_exp,current_exp_data)
     imageDifferentData.value = {
       pic1 :"/public/different/"+current_exp_data.dir+"/"+current_exp_data.exp.picture[randomize_lr],
@@ -104,6 +106,9 @@ const run_experiment = () => {
    
    
 <style scoped>
+#introv {
+  width:600px;
+}
 .layout-demo :deep(.arco-layout-header),
 .layout-demo :deep(.arco-layout-footer),
 .layout-demo :deep(.arco-layout-sider-children),
