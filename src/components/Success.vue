@@ -100,14 +100,6 @@ function uploadDataToServer(data) {
 }
 onMounted(() => {
     indexedDB.deleteDatabase('localforage');
-    window.experimentee = {
-  id: 1,
-  name: 'test',
-  age: 18,
-  idcard: "test",
-  phone: "test"
-}
-window.experiment_report = {}
     if (!window.experiment_report) {
         stat.value = "error"
         error.value = "No experiment report found."

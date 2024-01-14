@@ -78,7 +78,7 @@ setInterval(() => {
 }, 1000)
 const pic1base = { x: 0, y: 0 }
 const pic2base = { x: 0, y: 0 }
-const sensity = 15
+const sensity = 40
 const clickTrace = [] //[{x:0,y:0,time:0,find:false,side:"left/right"}]
 let baseTime = 0;
 function setTrace(x, y, find, side) {
