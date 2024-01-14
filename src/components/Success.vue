@@ -42,7 +42,7 @@
             </template>
             <template #extra>
                 <a-space>
-                    <a-button type='primary' @click="exitD">下载数据并退出</a-button>
+                    <a-button type='primary' @click="exitD">下载数据并跳转问卷</a-button>
                 </a-space>
             </template>
         </a-result>

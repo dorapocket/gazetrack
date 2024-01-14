@@ -64,7 +64,7 @@ function calcAccuracy() {
         title: '校验',
         content: "请不要移动您的鼠标 & 盯住中间的点5秒。我们将测量您的眼动准确度。",
         okText:"确认",
-
+        maskClosable:false,
         onOk:()=>{
             store_points_variable(); // start storing the prediction points
             let measurement_limit = 0
@@ -74,6 +74,7 @@ function calcAccuracy() {
                     var precision_measurement = calculatePrecision(past50);
                     Modal.info({
                         title: '校验结果',
+                        maskClosable:false,
                         content: ()=>h({
                             setup() {
                               return () => h('div', {class: 'info-modal-content'}, [

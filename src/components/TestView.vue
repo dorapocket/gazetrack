@@ -15,12 +15,14 @@ function showModalNext() {
         cancelText: "不能",
         hideCancel: false,
         simple: false,
+        maskClosable:false,
         onCancel: () => {
             Modal.error({
                 title: '对不起',
                 content: "对不起，您可能不满足实验条件，请使用更大分辨率的电脑重试。",
                 okText: "退出",
                 hideCancel: true,
+                maskClosable:false,
                 simple: true,
                 onOk: () => {
                     window.close();
@@ -49,6 +51,7 @@ onMounted(() => {
                 content: "您好，我们检测到您有待发送的数据。是否要重新进行发送？",
                 okText: "发送",
                 cancelText: "我不知道",
+                maskClosable:false,
                 hideCancel: false,
                 simple: false,
                 onCancel: () => {

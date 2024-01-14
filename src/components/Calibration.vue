@@ -95,6 +95,7 @@ onMounted(async () => {
             title: '错误',
             content: "加载时出现问题，请联系主试。" + e,
             okText: "刷新",
+            maskClosable:false,
             hideCancel: true,
             simple: true,
             onOk: () => {

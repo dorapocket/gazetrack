@@ -50,6 +50,7 @@ onMounted(async () => {
                 title: '错误',
                 content: "加载时出现问题，请联系主试。" + e,
                 okText: "刷新",
+                maskClosable:false,
                 hideCancel: true,
                 simple: true,
                 onOk: () => {
@@ -202,10 +203,8 @@ clearInterval(window.timer);
                 content: "没关系，下次继续加油哦！",
                 okText: "下一组",
                 hideCancel: true,
+                maskClosable:false,
                 simple: true,
-                onCancel: () => {
-                    loadImages(startTimer);
-                },
                 onOk: () => {
                     emit('report-finish', buildResultReport(false));
                 }
