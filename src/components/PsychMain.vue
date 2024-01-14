@@ -33,8 +33,13 @@ const imageDifferentDataDemo = ref({
 })
 provide("imageToFind",imageDifferentDataDemo)
 const continueExp = (dataFromChild) => {
+  if(typeof dataFromChild==='number'){
+    step.value = dataFromChild;
+  }else{
+    step.value ++;
+  }
   // console.log("go")
-      step.value ++;
+      
 };
 const demoReport = (report) => {
     console.log(report);
