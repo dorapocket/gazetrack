@@ -5,7 +5,7 @@
         <a-result v-if="stat == 'success'" status="success" title="谢谢">
             <template #subtitle>
                 <div class="info">
-                    <div>我们已经收到您的数据，感谢您的参与！</div>
+                    <div>您的数据已成功发送，感谢您的参与！</div>
                     <div>最后，我们需要您填写一份问卷，以便我们更好地分析实验结果。</div>
                 </div>
             </template>
@@ -32,8 +32,8 @@
         <a-result v-if="stat == 'error'" status="error" title="错误">
             <template #subtitle>
                 <div class="info">
-                    <div>抱歉，我们在发送数据时遇到了一些错误，请不用担心，您的数据已保存。</div>
-                    <div>请联系主试并提供以下错误截图：</div>
+                    <div>抱歉，我们在发送数据时遇到了一些错误，请不用担心，您的数据将会自动下载到本地。如果下载没有立刻开始，请<a style="font-weight: 700;color: #0085f2;" @click="click_download">单击此处</a>。</div>
+                    <div v-if="error">请联系主试并提供以下错误：</div>
                     <div style="margin-top:20px">
                         {{ error }}
                     </div>
@@ -42,7 +42,7 @@
             </template>
             <template #extra>
                 <a-space>
-                    <a-button type='primary' @click="exitD">下载数据并跳转问卷</a-button>
+                    <a-button type='primary' @click="finish">跳转问卷</a-button>
                 </a-space>
             </template>
         </a-result>
@@ -52,12 +52,16 @@
 import { ref, getCurrentInstance, reactive, onMounted } from 'vue'
 import axios from 'axios';
 import { MD5 } from 'crypto-js';
+// import j from "../assets/test_data.json"
 let stat = ref("wait");
 let error = ref("");
 
 function finish() {
     exitF();
-    window.location.href = "https://www.wjx.cn/vm/PiaVhAo.aspx#"
+    setInterval(()=>{
+        window.location.href = "https://www.wjx.cn/vm/PiaVhAo.aspx#"
+    },1000)
+
 }
 function numberToThreeDigitString(number) {
   // 将数字转换为字符串
@@ -70,14 +74,18 @@ function numberToThreeDigitString(number) {
 
   return numberString;
 }
-
-function exitD() {
+function click_download(){
+    document.getElementById("download_a").click();
+}
+function download(){
+    // stat.value="success"
     // 将 JSON 数据转换为字符串
     const jsonData = {
             experimentee: JSON.parse(JSON.stringify(window.experimentee)),
             data: window.experiment_report,
     }
-
+    // const jsonData = j
+    
     const jsonString = JSON.stringify(jsonData, null, 2); // 第二个参数用于格式化输出，可选
 
     // 创建一个 Blob 对象
@@ -88,6 +96,7 @@ function exitD() {
 
     // 创建下载链接
     const downloadLink = document.createElement('a');
+    downloadLink.id="download_a"
     downloadLink.href = blobUrl;
     downloadLink.download = "data_"+numberToThreeDigitString(jsonData.experimentee.id)+".json"; // 设置下载文件名
 
@@ -95,9 +104,9 @@ function exitD() {
     document.body.appendChild(downloadLink);
     downloadLink.click();
 
-    // 清理资源
-    document.body.removeChild(downloadLink);
-    URL.revokeObjectURL(blobUrl);
+}
+function exitD() {
+    download();
     finish();
 }
 function exitF() {
@@ -113,7 +122,7 @@ function exitF() {
             document.msExitFullscreen();
         }
     } else {
-        console.log('当前不处于全屏状态。');
+        console.log('No fullscreen');
     }
 }
 function uploadDataToServer(data) {
@@ -141,9 +150,14 @@ function uploadDataToServer(data) {
             console.error('Error uploading data:', error.message);
             error.value = error.message + ""
             stat.value = "error"
+            download();
         });
 }
 onMounted(() => {
+    // uploadDataToServer(j);
+    // window.experimentee = j.experimentee
+    // window.experiment_report = j.data
+
     indexedDB.deleteDatabase('localforage');
     if (!window.experiment_report) {
         stat.value = "error"
@@ -156,6 +170,7 @@ onMounted(() => {
             experimentee: JSON.parse(JSON.stringify(window.experimentee)),
             data: window.experiment_report,
         });
+        // download();
     }
 })
 </script>

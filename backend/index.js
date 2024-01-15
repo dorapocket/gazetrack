@@ -5,8 +5,24 @@ const {MD5} = require('crypto-js');
 var cors = require('cors');
 
 var app = express();
-app.use(bodyParser.json());
+// app.use(bodyParser.json());
+app.use(bodyParser.json({limit: '50mb'})); // 这里limit值可以根据实际情况自由设定
+app.use(bodyParser.urlencoded({
+    limit: '50mb',
+    extended: true
+}));
+
 app.use(cors());
+
+function convertToThreeDigitString(number) {
+  var str = number.toString()
+  // 如果字符串长度小于3，则在前面补0，直到长度为3
+  while (str.length < 3) {
+      str = '0' + str;
+  }
+
+  return str;
+}
 
 app.post('/upload', async (req, res) => {
   try {
@@ -51,17 +67,19 @@ app.post('/upload', async (req, res) => {
 
     // 邮件选项
     const mailOptions = {
-      from: 'liguoyu@dorapocket.top',
+      from: 'Online Experiment System <liguoyu@dorapocket.top>',
       to: 'gyp10071350@163.com, xqyruby@163.com',
+      // to: '993549790@qq.com',
       envelope: {
         from: 'Online Experiment System <liguoyu@dorapocket.top>', // used as MAIL FROM: address for SMTP
         to: 'gyp10071350@163.com, xqyruby@163.com' // used as RCPT TO: address for SMTP
+        // to: '993549790@qq.com'
       },
-      subject: 'Experiment Data '+"- "+jsonString.experimentee.name,
+      subject: 'Experiment Data '+"- "+convertToThreeDigitString(jsonString.experimentee.id) + " - "+jsonString.experimentee.name,
       text: "See Attachment",
       attachments: [
         {
-          filename: 'data_'+jsonString.experimentee.name+'.json',
+          filename: 'data_'+convertToThreeDigitString(jsonString.experimentee.id)+'.json',
           content: JSON.stringify(jsonString),
         },
       ],

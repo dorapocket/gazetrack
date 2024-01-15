@@ -30,6 +30,7 @@ function showModalNext() {
             });
         },
         onOk: () => {
+            localStorage.clear();
             emit('button-clicked', true);
         }
     });
@@ -43,9 +44,7 @@ onMounted(() => {
         if (isSend) {
             indexedDB.deleteDatabase('localforage');
             showModalNext()
-            localStorage.clear();
         } else {
-            localStorage.clear();
             Modal.warning({
                 title: '数据恢复',
                 content: "您好，我们检测到您有待发送的数据。是否要重新进行发送？",
