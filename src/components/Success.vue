@@ -168,6 +168,7 @@ onMounted(() => {
     } else {
         uploadDataToServer({
             experimentee: JSON.parse(JSON.stringify(window.experimentee)),
+            eyemove_accuracy:window.accuracy_user,
             data: window.experiment_report,
         });
         // download();

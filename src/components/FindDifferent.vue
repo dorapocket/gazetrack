@@ -11,6 +11,7 @@
 <script setup>
 import { ref, onMounted, reactive, watch, getCurrentInstance, onBeforeMount, toRefs, onUpdated, inject, resolveComponent } from 'vue';
 import { Modal, Button } from '@arco-design/web-vue';
+import {cloneDeep} from 'lodash';
 const canvasWidth = 1300;
 const canvasHeight = 700;
 const canvasRef = ref(null);
@@ -86,8 +87,12 @@ function setTrace(x, y, find, side) {
     clickTrace.push({ x, y, time: Date.now() - baseTime, find, side })
     // console.log({x,y,time:Date.now()-baseTime,find,side},baseTime,Date.now())
 }
+let mouse_move = []
+let eye_move = []
 const loadImages = (timer) => {
-    hideCamera()
+    hideCamera();
+    mouse_move = [];
+    eye_move = [];
     const canvas = canvasRef.value;
     const context = canvas.getContext("2d");
     context.fillStyle = '#ffffff';
@@ -167,8 +172,6 @@ const loadImages = (timer) => {
     }, 3000)
 };
 
-const mouse_move = []
-const eye_move = []
 window.handleMouseMove = function (event) {
     // const canvas = document.getElementById("cvs")
     window.mouseX = event.clientX - window.cvs.getBoundingClientRect().left;
@@ -227,9 +230,9 @@ clearInterval(window.timer);
                     let x = (((pre.x || 0) - canvas.getBoundingClientRect().left) || 0).toFixed(1)
                 let y = ((pre.y || 0) - (canvas.getBoundingClientRect().top || 0)).toFixed(1)
                 console.log("Eye:",[parseFloat(x||"0.0")||0,parseFloat(y||"0.0")||0,Date.now()])
-                eye_move.push([parseFloat(x||"0.0")||0,parseFloat(y||"0.0")||0])
+                eye_move.push([parseFloat(x||"0.0")||0,parseFloat(y||"0.0")||0,Date.now()])
                 }catch(e){
-                    console.log("Err! Eye: [0,0]",Date.now())
+                    // console.log("Err! Eye: [0,0]",Date.now())
                     eye_move.push([0,0,Date.now()])
                 }
             });
@@ -310,8 +313,8 @@ const buildResultReport = (isfind) => {
     const result = {
         find: isfind,
         clicks: JSON.parse(JSON.stringify(clickTrace)),
-        mouse_move: mouse_move,
-        eye_move:eye_move,
+        mouse_move: cloneDeep(mouse_move),
+        eye_move:cloneDeep(eye_move),
         timeCost: Date.now() - baseTime,
         type: gameData.value.type,
         picture: {
@@ -325,7 +328,7 @@ const buildResultReport = (isfind) => {
     };
     // console.log("aa",result);
     clickTrace.length = 0;
-    return result;
+    return cloneDeep(result);
 };
 const drawCircle = (x, y) => {
     const canvas = canvasRef.value;

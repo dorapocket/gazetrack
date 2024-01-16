@@ -67,11 +67,12 @@ function calcAccuracy() {
         maskClosable:false,
         onOk:()=>{
             store_points_variable(); // start storing the prediction points
-            let measurement_limit = 0
+            let measurement_limit = 60
             sleep(5000).then(() => {
                     stop_storing_points_variable(); // stop storing the prediction points
                     var past50 = window.webgazer.getStoredPoints(); // retrieve the stored points
                     var precision_measurement = calculatePrecision(past50);
+                    window.accuracy_user = precision_measurement;
                     Modal.info({
                         title: '校验结果',
                         maskClosable:false,
