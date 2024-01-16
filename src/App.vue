@@ -2,6 +2,7 @@
 import { provide, reactive,ref } from 'vue';
 import PsychMain from './components/PsychMain.vue'
 import webgazer from 'webgazer'
+// window.eyegaze_enable=false
 
 if(window.eyegaze_enable){
   window.webgazer = webgazer

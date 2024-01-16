@@ -76,7 +76,8 @@ onMounted(async () => {
     resize()
     //start the webgazer tracker
     //start the webgazer tracker
-    try {
+    if(window.eyegaze_enable){
+        try {
         await window.webgazer.setRegression('ridge') // ridge /* currently must set regression and tracker */
             //.setTracker('clmtrackr')
             .setGazeListener(function (data, clock) {
@@ -103,6 +104,8 @@ onMounted(async () => {
             }
         });
     }
+    }
+
     //Set up the webgazer video feedback.
     var setup = function () {
 
@@ -118,7 +121,9 @@ onMounted(async () => {
 })
 window.saveDataAcrossSessions = true;
 onBeforeUnmount(() => {
+    if(window.eyegaze_enable){
     window.webgazer.pause();
+    }
 })
 
 //  exporting data to .csv

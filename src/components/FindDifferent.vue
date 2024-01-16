@@ -4,14 +4,15 @@
             <div style="position: absolute; margin: 10px 30px; top:0px; right:20px">
                 <h1><icon-clock-circle style="margin-right: 10px;" /> {{ remainingTime }}s</h1>
             </div>
-            <canvas id="cvs" ref="canvasRef" :width="canvasWidth" :height="canvasHeight" @click="handleCanvasClick"></canvas>
+            <canvas id="cvs" ref="canvasRef" :width="canvasWidth" :height="canvasHeight"
+                @click="handleCanvasClick"></canvas>
         </div>
     </a-spin>
 </template>
 <script setup>
 import { ref, onMounted, reactive, watch, getCurrentInstance, onBeforeMount, toRefs, onUpdated, inject, resolveComponent } from 'vue';
 import { Modal, Button } from '@arco-design/web-vue';
-import {cloneDeep} from 'lodash';
+import { cloneDeep } from 'lodash';
 const canvasWidth = 1300;
 const canvasHeight = 700;
 const canvasRef = ref(null);
@@ -24,7 +25,7 @@ const clicks = ref(0);
 let timer;
 function hideCamera() {
     let a = document.getElementById("webgazerVideoContainer")
-    if(a) a.style.display = "none";
+    if (a) a.style.display = "none";
 }
 const loading = ref(true)
 
@@ -51,7 +52,7 @@ onMounted(async () => {
                 title: '错误',
                 content: "加载时出现问题，请联系主试。" + e,
                 okText: "刷新",
-                maskClosable:false,
+                maskClosable: false,
                 hideCancel: true,
                 simple: true,
                 onOk: () => {
@@ -59,6 +60,8 @@ onMounted(async () => {
                 }
             });
         }
+    }else{
+        loading.value = false;
     }
     loadImages(startTimer);
 });
@@ -171,22 +174,22 @@ const loadImages = (timer) => {
         }).catch((e) => { console.log(e) })
     }, 3000)
 };
-
 window.handleMouseMove = function (event) {
     // const canvas = document.getElementById("cvs")
     window.mouseX = event.clientX - window.cvs.getBoundingClientRect().left;
     window.mouseY = event.clientY - window.cvs.getBoundingClientRect().top;
+    mouse_move.push([window.mouseX, window.mouseY, Date.now()]);
 }
 const startTimer = () => {
     if (window.timer) {
-        if(window.timer){
-clearInterval(window.timer);
+        if (window.timer) {
+            clearInterval(window.timer);
         }
-        
-        if(window.timer_100ms){
+
+        if (window.timer_100ms) {
             clearInterval(window.timer_100ms);
         }
-        
+
         if (window.eyegaze_enable) {
             window.webgazer.pause();
         }
@@ -206,10 +209,26 @@ clearInterval(window.timer);
                 content: "没关系，下次继续加油哦！",
                 okText: "下一组",
                 hideCancel: true,
-                maskClosable:false,
+                maskClosable: false,
                 simple: true,
                 onOk: () => {
-                    emit('report-finish', buildResultReport(false));
+                    if (gameData.value.needRest) {
+                        const cvs = window.cvs;
+                        const context = cvs.getContext("2d");
+                        context.fillStyle = '#ffffff';
+                        context.fillRect(0, 0, cvs.width, cvs.height);
+                        Modal.info({
+                            title: '休息',
+                            content: "一组结束，辛苦啦，休息一下吧！",
+                            okText: "继续",
+                            hideCancel: true,
+                            maskClosable: false,
+                            simple: true,
+                            onOk: () => {
+                                emit('report-finish', buildResultReport(false));
+                            }
+                        });
+                    } else emit('report-finish', buildResultReport(false));
                 }
             });
         }
@@ -219,28 +238,32 @@ clearInterval(window.timer);
     }
     // const canvas = canvasRef.value;
     window.cvs.addEventListener('mousemove', window.handleMouseMove);
-
     let timer_100ms = setInterval(() => {
         const canvas = window.cvs;
         mouse_move.push([window.mouseX || 0, window.mouseY || 0, Date.now()]);
         if (window.eyegaze_enable) {
             window.webgazer.getCurrentPrediction().then((pre) => {
                 // console.log("Eye",res);
-                try{
+                try {
                     let x = (((pre.x || 0) - canvas.getBoundingClientRect().left) || 0).toFixed(1)
-                let y = ((pre.y || 0) - (canvas.getBoundingClientRect().top || 0)).toFixed(1)
-                console.log("Eye:",[parseFloat(x||"0.0")||0,parseFloat(y||"0.0")||0,Date.now()])
-                eye_move.push([parseFloat(x||"0.0")||0,parseFloat(y||"0.0")||0,Date.now()])
-                }catch(e){
+                    let y = ((pre.y || 0) - (canvas.getBoundingClientRect().top || 0)).toFixed(1)
+                    // console.log("Eye:", [parseFloat(x || "0.0") || 0, parseFloat(y || "0.0") || 0, Date.now()])
+                    eye_move.push([parseFloat(x || "0.0") || 0, parseFloat(y || "0.0") || 0, Date.now()])
+                } catch (e) {
                     // console.log("Err! Eye: [0,0]",Date.now())
-                    eye_move.push([0,0,Date.now()])
+                    eye_move.push([0, 0, Date.now()])
                 }
             });
             // eye_move.push([pre.x - canvas.getBoundingClientRect().left,pre.y- canvas.getBoundingClientRect().top])
             // console.log("Eye:",pre)
         }
-        console.log("Mouse:", [window.mouseX || 0, window.mouseY || 0,Date.now()])
+        // console.log("Mouse:", [window.mouseX || 0, window.mouseY || 0, Date.now()])
     }, 100)
+
+    let timer_10ms = setInterval(() => {
+        const canvas = window.cvs;
+        mouse_move.push([window.mouseX || 0, window.mouseY || 0, Date.now()]);
+    }, 10)
 
     baseTime = Date.now();
     window.timer = timer;
@@ -279,7 +302,24 @@ const handleCanvasClick = (event) => {
         if (window.timer) clearInterval(window.timer);
         if (window.timer_100ms) clearInterval(window.timer_100ms);
         setTimeout(() => {
-            emit('report-finish', buildResultReport(true));
+            if (gameData.value.needRest) {
+                const cvs = window.cvs;
+                const context = cvs.getContext("2d");
+                context.fillStyle = '#ffffff';
+                context.fillRect(0, 0, cvs.width, cvs.height);
+                Modal.info({
+                    title: '休息',
+                    content: "一组结束，辛苦啦，休息一下吧！",
+                    okText: "继续",
+                    hideCancel: true,
+                    maskClosable: false,
+                    simple: true,
+                    onOk: () => {
+                        emit('report-finish', buildResultReport(false));
+                    }
+                });
+            } else
+                emit('report-finish', buildResultReport(true));
             // emit('button-clicked', true);
         }, 500)
 
@@ -314,7 +354,7 @@ const buildResultReport = (isfind) => {
         find: isfind,
         clicks: JSON.parse(JSON.stringify(clickTrace)),
         mouse_move: cloneDeep(mouse_move),
-        eye_move:cloneDeep(eye_move),
+        eye_move: cloneDeep(eye_move),
         timeCost: Date.now() - baseTime,
         type: gameData.value.type,
         picture: {

@@ -26,7 +26,7 @@
       <a-layout-footer></a-layout-footer>
     </a-layout>
   </div>
-  <FindDifferent ref="childRef" v-else @report-finish="saveReport"/>
+  <FindDifferent ref="childRef" v-else @report-finish="saveReport" />
 </template>
    
 <script setup>
@@ -34,33 +34,60 @@ import FindDifferent from './FindDifferent.vue'
 import { ref, getCurrentInstance, reactive, provide } from 'vue'
 import BeforeStart from './BeforeStart.vue'
 import different_config from "../assets/different_config.json"
-import { chunk,shuffle } from 'lodash'
+import { chunk, shuffle, cloneDeep } from 'lodash'
 
 const publicPath = import.meta.env.BASE_URL;
 const childRef = ref()
 const build_random_experiment = () => {
-  const experiment = []
+  let experiment = []
   // const demo = ["bathtub_boy","bathtub_boy","bathtub_boy","bathtub_boy","bathtub_boy","bathtub_boy","bathtub_boy","bathtub_boy","bathtub_boy"]
   let demo = Object.keys(different_config)
   // demo.push("bathroom_woman","bathroom_woman")
-  const all_data = chunk(shuffle(demo),3);
+  // const all_data = chunk(shuffle(demo),3);
+  const all_data = shuffle(demo);
+  const rearrange_map = {};
+
+  function getNext(image) {
+    const choice = ["social", "social_nonsocial", "nonsocial"];
+    let random = choice[Math.floor(Math.random() * 3)]
+    if (!rearrange_map[image]) rearrange_map[image] = {};
+    if (Object.keys(rearrange_map[image]).length >= 3) {
+      return false;
+    }
+    while (rearrange_map[image][random] && Object.keys(rearrange_map[image]).length < 3) {
+      random = choice[Math.floor(Math.random() * 3)]
+    }
+    rearrange_map[image][random] = true;
+    return random;
+  }
+
+  for (let j = 0; j < 3; j++) {
+    for (let i = 0; i < 9; i++) {
+      const typ = getNext(all_data[i]);
+      if(!typ) {
+      console.error("Type randome choice error");break;
+      }
+      experiment.push({ exp: different_config[all_data[i]][typ], type: typ, dir: all_data[i] });
+    }
+  }
   // 
   // const all_data = chunk(shuffle(demo),3);
-  for(let i=0;i<3;i++){
-    experiment.push({exp:different_config[all_data[0][i]]["social"],type:"social",dir:all_data[0][i]});
-    experiment.push({exp:different_config[all_data[1][i]]["social_nonsocial"],type:"social_nonsocial",dir:all_data[1][i]});
-    experiment.push({exp:different_config[all_data[2][i]]["nonsocial"],type:"nonsocial",dir:all_data[2][i]});
-  }
-  return shuffle(experiment)
+  // for(let i=0;i<3;i++){
+  //   experiment.push({exp:different_config[all_data[0][i]]["nonsocial"],type:"social",dir:all_data[0][i]});
+  //   experiment.push({exp:different_config[all_data[1][i]]["social"],type:"social_nonsocial",dir:all_data[1][i]});
+  //   experiment.push({exp:different_config[all_data[2][i]]["social_nonsocial"],type:"nonsocial",dir:all_data[2][i]});
+  // }
+  return experiment;
+  // return shuffle(experiment)
 }
 const experiment = build_random_experiment();
-console.log("Pending Experiment:",experiment)
+console.log("Pending Experiment:", experiment)
 const experiment_report = [];
 // defineProps({
 //   msg: String,
 // })
 const imageDifferentData = ref({})
-provide("imageToFind",imageDifferentData)
+provide("imageToFind", imageDifferentData)
 const introduction = ref(true);
 const emit = getCurrentInstance().emit;
 const appContext = getCurrentInstance().appContext;
@@ -71,29 +98,31 @@ const handleOk = () => {
   // emit('button-clicked', true);
 };
 const saveReport = (dataFromChild) => {
+  // console.log(dataFromChild)
   experiment_report.push(dataFromChild);
   // console.log("Next ")
   run_experiment();
 }
 const run_experiment = () => {
   current_exp += 1;
-  if(current_exp==9){
-    console.log("All Settle! Result: ",experiment_report);
+  if (current_exp == 27) {
+    console.log("All Settle! Result: ", experiment_report);
     window.experiment_report = experiment_report;
     emit('button-clicked', true);
-  }else{
+  } else {
     // debugger
     const current_exp_data = experiment[current_exp];
     const randomize_lr = Math.random() < 0.5 ? 0 : 1;
     const scale = 550 / current_exp_data.exp.size[1];
     // console.log("Meta:",current_exp,current_exp_data)
     imageDifferentData.value = {
-      pic1 :"/public/different/"+current_exp_data.dir+"/"+current_exp_data.exp.picture[randomize_lr],
-      pic2 : "/public/different/"+current_exp_data.dir+"/"+current_exp_data.exp.picture[randomize_lr==0?1:0],
-      differentx : current_exp_data.exp.different.x * scale,
-      differenty : current_exp_data.exp.different.y * scale,
-      scale : scale,
-      type:current_exp_data.type
+      pic1: "/public/different/" + current_exp_data.dir + "/" + current_exp_data.exp.picture[randomize_lr],
+      pic2: "/public/different/" + current_exp_data.dir + "/" + current_exp_data.exp.picture[randomize_lr == 0 ? 1 : 0],
+      differentx: current_exp_data.exp.different.x * scale,
+      differenty: current_exp_data.exp.different.y * scale,
+      scale: scale,
+      type: current_exp_data.type,
+      needRest: current_exp == 8 || current_exp == 17
     }
     // imageDifferentData.value.pic1 = "/public/different/"+current_exp_data.dir+"/"+current_exp_data.exp.picture[randomize_lr];
     // imageDifferentData.value.pic2 = "/public/different/"+current_exp_data.dir+"/"+current_exp_data.exp.picture[randomize_lr==0?1:0];
@@ -107,8 +136,9 @@ const run_experiment = () => {
    
 <style scoped>
 #introv {
-  width:600px;
+  width: 600px;
 }
+
 .layout-demo :deep(.arco-layout-header),
 .layout-demo :deep(.arco-layout-footer),
 .layout-demo :deep(.arco-layout-sider-children),
@@ -136,5 +166,6 @@ const run_experiment = () => {
  .layout-demo :deep(.arco-layout-footer) {
   height: 64px;
   background-color: var(--color-primary-light-4);
- } */</style>
+ } */
+</style>
    
