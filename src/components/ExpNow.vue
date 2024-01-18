@@ -98,7 +98,7 @@ const handleOk = () => {
   // emit('button-clicked', true);
 };
 const saveReport = (dataFromChild) => {
-  // console.log(dataFromChild)
+  console.log("Test Result from last picture:",dataFromChild)
   experiment_report.push(dataFromChild);
   // console.log("Next ")
   run_experiment();

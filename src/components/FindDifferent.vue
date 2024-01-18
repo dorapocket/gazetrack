@@ -84,18 +84,18 @@ setInterval(() => {
 const pic1base = { x: 0, y: 0 }
 const pic2base = { x: 0, y: 0 }
 const sensity = 40
-const clickTrace = [] //[{x:0,y:0,time:0,find:false,side:"left/right"}]
+let clickTrace = [] //[{x:0,y:0,time:0,find:false,side:"left/right"}]
 let baseTime = 0;
+let finishTime = 0;
 function setTrace(x, y, find, side) {
     clickTrace.push({ x, y, time: Date.now() - baseTime, find, side })
-    // console.log({x,y,time:Date.now()-baseTime,find,side},baseTime,Date.now())
+    console.log("click!",{x,y,time:Date.now()-baseTime,find,side},baseTime,Date.now())
 }
 let mouse_move = []
 let eye_move = []
 const loadImages = (timer) => {
     hideCamera();
-    mouse_move = [];
-    eye_move = [];
+
     const canvas = canvasRef.value;
     const context = canvas.getContext("2d");
     context.fillStyle = '#ffffff';
@@ -170,6 +170,10 @@ const loadImages = (timer) => {
             context.fillRect(0, 0, canvas.width, canvas.height);
             context.drawImage(window.img1, pic1base.x, pic1base.y, window.img1.width, window.img1.height);
             context.drawImage(window.img2, pic2base.x, pic2base.y, window.img2.width, window.img2.height);
+            mouse_move = [];
+            eye_move = [];
+            clickTrace = [];
+            listenClick = true;
             timer();
         }).catch((e) => { console.log(e) })
     }, 3000)
@@ -204,6 +208,7 @@ const startTimer = () => {
             remainingTime.value--;
         } else {
             clearInterval(timer);
+            finishTime = Date.now();
             Modal.error({
                 title: '时间到啦',
                 content: "没关系，下次继续加油哦！",
@@ -266,11 +271,14 @@ const startTimer = () => {
     }, 10)
 
     baseTime = Date.now();
+    finishTime = 0;
     window.timer = timer;
     window.timer_100ms = timer_100ms;
 };
 const emit = getCurrentInstance().emit;
+let listenClick = true;
 const handleCanvasClick = (event) => {
+    if (!listenClick) return;
     const canvas = canvasRef.value;
     const rect = canvas.getBoundingClientRect();
     const x = event.clientX - rect.left;
@@ -301,6 +309,8 @@ const handleCanvasClick = (event) => {
         }
         if (window.timer) clearInterval(window.timer);
         if (window.timer_100ms) clearInterval(window.timer_100ms);
+        finishTime = Date.now();
+        listenClick = false;
         setTimeout(() => {
             if (gameData.value.needRest) {
                 const cvs = window.cvs;
@@ -316,11 +326,13 @@ const handleCanvasClick = (event) => {
                     simple: true,
                     onOk: () => {
                         emit('report-finish', buildResultReport(false));
+                        listenClick = true;
                     }
                 });
             } else
                 emit('report-finish', buildResultReport(true));
             // emit('button-clicked', true);
+            
         }, 500)
 
         // Modal.info({
@@ -355,7 +367,7 @@ const buildResultReport = (isfind) => {
         clicks: JSON.parse(JSON.stringify(clickTrace)),
         mouse_move: cloneDeep(mouse_move),
         eye_move: cloneDeep(eye_move),
-        timeCost: Date.now() - baseTime,
+        timeCost: finishTime - baseTime,
         type: gameData.value.type,
         picture: {
             left: gameData.value.pic1,
@@ -367,7 +379,6 @@ const buildResultReport = (isfind) => {
         },
     };
     // console.log("aa",result);
-    clickTrace.length = 0;
     return cloneDeep(result);
 };
 const drawCircle = (x, y) => {
