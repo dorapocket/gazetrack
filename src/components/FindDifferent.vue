@@ -206,7 +206,8 @@ const startTimer = () => {
     timer = setInterval(() => {
         if (remainingTime.value > 0) {
             remainingTime.value--;
-        } else {
+        }
+        if (remainingTime.value <= 0) {
             clearInterval(timer);
             finishTime = Date.now();
             Modal.error({
@@ -325,7 +326,7 @@ const handleCanvasClick = (event) => {
                     maskClosable: false,
                     simple: true,
                     onOk: () => {
-                        emit('report-finish', buildResultReport(false));
+                        emit('report-finish', buildResultReport(true));
                         listenClick = true;
                     }
                 });

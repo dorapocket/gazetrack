@@ -88,7 +88,7 @@ onMounted(async () => {
             .begin();
         loading.value = false;
         window.webgazer.showVideoPreview(true) /* shows all video previews */
-            .showPredictionPoints(true) /* shows a square every 100 milliseconds where current prediction is */
+            .showPredictionPoints(false) /* shows a square every 100 milliseconds where current prediction is */
             .applyKalmanFilter(true); /* Kalman Filter defaults to on. Can be toggled by user. */
     } catch (e) {
         console.log(e);

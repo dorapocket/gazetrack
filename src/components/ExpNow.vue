@@ -42,34 +42,38 @@ const build_random_experiment = () => {
   let experiment = []
   // const demo = ["bathtub_boy","bathtub_boy","bathtub_boy","bathtub_boy","bathtub_boy","bathtub_boy","bathtub_boy","bathtub_boy","bathtub_boy"]
   let demo = Object.keys(different_config)
-  // demo.push("bathroom_woman","bathroom_woman")
-  // const all_data = chunk(shuffle(demo),3);
-  const all_data = shuffle(demo);
-  const rearrange_map = {};
+  let all_data = chunk(shuffle(demo), 3)
+  const group = [{}, {}, {}]
+  for (let image of all_data[0])
+    group[0][image]={ exp: different_config[image]["social"], type: "social", dir: image };
+  for (let image of all_data[1])
+    group[0][image]={ exp: different_config[image]["nonsocial"], type: "nonsocial", dir: image };
+  for (let image of all_data[2])
+    group[0][image]={ exp: different_config[image]["social_nonsocial"], type: "social_nonsocial", dir: image };
 
-  function getNext(image) {
-    const choice = ["social", "social_nonsocial", "nonsocial"];
-    let random = choice[Math.floor(Math.random() * 3)]
-    if (!rearrange_map[image]) rearrange_map[image] = {};
-    if (Object.keys(rearrange_map[image]).length >= 3) {
-      return false;
-    }
-    while (rearrange_map[image][random] && Object.keys(rearrange_map[image]).length < 3) {
-      random = choice[Math.floor(Math.random() * 3)]
-    }
-    rearrange_map[image][random] = true;
-    return random;
-  }
+  for (let image of all_data[0])
+    group[1][image]={ exp: different_config[image]["nonsocial"], type: "nonsocial", dir: image };
+  for (let image of all_data[1])
+    group[1][image]={ exp: different_config[image]["social_nonsocial"], type: "social_nonsocial", dir: image };
+  for (let image of all_data[2])
+    group[1][image]={ exp: different_config[image]["social"], type: "social", dir: image };  
 
-  for (let j = 0; j < 3; j++) {
-    for (let i = 0; i < 9; i++) {
-      const typ = getNext(all_data[i]);
-      if(!typ) {
-      console.error("Type randome choice error");break;
-      }
-      experiment.push({ exp: different_config[all_data[i]][typ], type: typ, dir: all_data[i] });
+  for (let image of all_data[0])
+    group[2][image]={ exp: different_config[image]["social_nonsocial"], type: "social_nonsocial", dir: image };
+  for (let image of all_data[1])
+    group[2][image]={ exp: different_config[image]["social"], type: "social", dir: image };
+  for (let image of all_data[2])
+    group[2][image]={ exp: different_config[image]["nonsocial"], type: "nonsocial", dir: image }; 
+
+  let shuffle2 = shuffle(demo)
+  function arrange_like(idarray,grp){
+    const rearr = [];
+    for(let i=0;i<idarray.length;i++){
+        rearr.push(grp[idarray[i]]);
     }
+    return rearr;
   }
+  experiment = [arrange_like(shuffle2,group[0]),arrange_like(shuffle2,group[1]),arrange_like(shuffle2,group[2])].flat();
   // 
   // const all_data = chunk(shuffle(demo),3);
   // for(let i=0;i<3;i++){
@@ -98,7 +102,7 @@ const handleOk = () => {
   // emit('button-clicked', true);
 };
 const saveReport = (dataFromChild) => {
-  console.log("Test Result from last picture:",dataFromChild)
+  console.log("Test Result from last picture:", dataFromChild)
   experiment_report.push(dataFromChild);
   // console.log("Next ")
   run_experiment();

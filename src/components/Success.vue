@@ -169,6 +169,8 @@ onMounted(() => {
         uploadDataToServer({
             experimentee: JSON.parse(JSON.stringify(window.experimentee)),
             eyemove_accuracy:window.accuracy_user,
+            metadata:window._user_meta,
+            calibration_data:window._calibrationData,
             data: window.experiment_report,
         });
         // download();

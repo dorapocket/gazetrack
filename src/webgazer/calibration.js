@@ -229,11 +229,23 @@ function calculatePrecision(past50Array) {
     // Calculate the position of the point the user is staring at
     var staringPointX = windowWidth / 2;
     var staringPointY = windowHeight / 2;
-  
+
+    var k = [];
+    for(let i=0;i<50;i++){
+      k.push([x50[i],y50[i]]);
+    }
     var precisionPercentages = new Array(50);
     calculatePrecisionPercentages(precisionPercentages, windowHeight, x50, y50, staringPointX, staringPointY);
     var precision = calculateAverage(precisionPercentages);
-  
+    window._user_meta = {
+      windowHeight,
+      windowWidth
+    }
+    window._calibrationData = {
+      actual_points: [staringPointX,staringPointY],
+      predict_points: k,
+      percision:Math.round(precision)
+    };
     // Return the precision measurement as a rounded percentage
     return Math.round(precision);
   };
