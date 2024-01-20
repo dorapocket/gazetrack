@@ -368,7 +368,7 @@ self.webgazer = self.webgazer || {};
      * @return {Array}
      */
     self.webgazer.util.KalmanFilter.prototype.update = function(z) {
-
+        console.log("worker kalman");
       // Here, we define all the different matrix operations we will need
       const {
           add, sub, mult, inv, identity, transpose,
@@ -923,12 +923,17 @@ self.onmessage = function(event) {
         self.dataTrail.push({'eyes':eyes, 'screenPos':screenPos, 'type':type});
     }
     self.needsTraining = true;
+    console.log("worker get message:",data)
 };
 
+self.onerror = function(event) {
+    console.error("worker error:",event)
+};
 /**
  * Compute coefficient from training data
  */
 function retrain() {
+    // console.log("retrain",self.screenXClicksArray,self.needsTraining)
     if (self.screenXClicksArray.length === 0) {
         return;
     }
@@ -942,6 +947,7 @@ function retrain() {
     var coefficientsX = ridge(screenXArray, eyeFeatures, ridgeParameter);
     var coefficientsY = ridge(screenYArray, eyeFeatures, ridgeParameter);
     self.postMessage({'X':coefficientsX, 'Y': coefficientsY});
+    console.log("send to host:",{'X':coefficientsX, 'Y': coefficientsY})
     self.needsTraining = false;
 }
 

@@ -95,6 +95,9 @@ function calcAccuracy() {
                         okButtonProps:{disabled:precision_measurement<measurement_limit},
                         onOk:()=>{
                             ClearCanvas();
+                            window.webgazer.removeMouseEventListeners()
+                            // window.cancelAnimationFrame(window._anim);
+                            window.webgazer.pause();
                             window.calibrationOK();
                         },
                         onCancel:()=>{

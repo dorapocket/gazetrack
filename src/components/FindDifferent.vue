@@ -34,13 +34,13 @@ onMounted(async () => {
         try {
             // await window.webgazer.setRegression('ridge') // ridge /* currently must set regression and tracker */
             //     // .setTracker('clmtrackr')
-            //     // .setGazeListener(function(data, clock) {
-            //     //     console.log(data); /* data is an object containing an x and y key which are the x and y prediction coordinates (no bounds limiting) */
-            //     //     console.log(clock); /* elapsed time in milliseconds since webgazer.begin() was called */
-            //     // })
+            //     .setGazeListener(function(data, clock) {
+            //         console.log(data,clock); /* data is an object containing an x and y key which are the x and y prediction coordinates (no bounds limiting) */
+            //         // console.log(clock); /* elapsed time in milliseconds since webgazer.begin() was called */
+            //     })
             //     .saveDataAcrossSessions(true)
-            //     .begin()
-            window.webgazer.resume()
+            //     .begin(50)
+            // window.webgazer.resume()
             hideCamera()
             loading.value = false;
 
@@ -67,7 +67,8 @@ onMounted(async () => {
 });
 onBeforeMount(() => {
     if (window.eyegaze_enable) {
-        window.webgazer.pause();
+        console.log("eyegaze paused")
+        // window.webgazer.pause();
     }
 
 })
@@ -182,7 +183,7 @@ window.handleMouseMove = function (event) {
     // const canvas = document.getElementById("cvs")
     window.mouseX = event.clientX - window.cvs.getBoundingClientRect().left;
     window.mouseY = event.clientY - window.cvs.getBoundingClientRect().top;
-    mouse_move.push([window.mouseX, window.mouseY, Date.now()]);
+    // mouse_move.push([window.mouseX, window.mouseY, Date.now()]);
 }
 const startTimer = () => {
     if (window.timer) {
@@ -240,7 +241,7 @@ const startTimer = () => {
         }
     }, 1000);
     if (window.eyegaze_enable) {
-        window.webgazer.resume();
+        // window.webgazer.resume();
     }
     // const canvas = canvasRef.value;
     window.cvs.addEventListener('mousemove', window.handleMouseMove);
@@ -248,28 +249,32 @@ const startTimer = () => {
         const canvas = window.cvs;
         mouse_move.push([window.mouseX || 0, window.mouseY || 0, Date.now()]);
         if (window.eyegaze_enable) {
-            window.webgazer.getCurrentPrediction().then((pre) => {
+            const t = Date.now();
+            window._getpred().then((pre) => {
                 // console.log("Eye",res);
                 try {
                     let x = (((pre.x || 0) - canvas.getBoundingClientRect().left) || 0).toFixed(1)
                     let y = ((pre.y || 0) - (canvas.getBoundingClientRect().top || 0)).toFixed(1)
-                    // console.log("Eye:", [parseFloat(x || "0.0") || 0, parseFloat(y || "0.0") || 0, Date.now()])
-                    eye_move.push([parseFloat(x || "0.0") || 0, parseFloat(y || "0.0") || 0, Date.now()])
+                    // console.log("Eye:", [parseFloat(x || "0.0") || 0, parseFloat(y || "0.0") || 0, t])
+    //     window.gazeDot.style.display = 'block';
+    //   window.gazeDot.style.transform = 'translate3d(' + pre.x + 'px,' + pre.y + 'px,0)';
+                    eye_move.push([parseFloat(x || "0.0") || 0, parseFloat(y || "0.0") || 0, t])
                 } catch (e) {
                     // console.log("Err! Eye: [0,0]",Date.now())
-                    eye_move.push([0, 0, Date.now()])
+                    eye_move.push([0, 0, t])
                 }
             });
             // eye_move.push([pre.x - canvas.getBoundingClientRect().left,pre.y- canvas.getBoundingClientRect().top])
-            // console.log("Eye:",pre)
+            // eye_move.push([window._eye_prediction.x - canvas.getBoundingClientRect().left,window._eye_prediction.y- canvas.getBoundingClientRect().top])
+            // console.log("Eye:",window._eye_prediction)
         }
         // console.log("Mouse:", [window.mouseX || 0, window.mouseY || 0, Date.now()])
-    }, 100)
+    }, 50)
 
-    let timer_10ms = setInterval(() => {
-        const canvas = window.cvs;
-        mouse_move.push([window.mouseX || 0, window.mouseY || 0, Date.now()]);
-    }, 10)
+    // let timer_10ms = setInterval(() => {
+    //     const canvas = window.cvs;
+    //     mouse_move.push([window.mouseX || 0, window.mouseY || 0, Date.now()]);
+    // }, 10)
 
     baseTime = Date.now();
     finishTime = 0;

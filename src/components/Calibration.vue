@@ -78,13 +78,15 @@ onMounted(async () => {
     //start the webgazer tracker
     if(window.eyegaze_enable){
         try {
-        await window.webgazer.setRegression('ridge') // ridge /* currently must set regression and tracker */
+        await window.webgazer.setRegression('threadedRidge') // ridge /* currently must set regression and tracker */
             //.setTracker('clmtrackr')
             .setGazeListener(function (data, clock) {
                 //   console.log(data); /* data is an object containing an x and y key which are the x and y prediction coordinates (no bounds limiting) */
                 //   console.log(clock); /* elapsed time in milliseconds since webgazer.begin() was called */
+                if(data&&data.x&&data.y) window._eye_prediction = [data.x,data.y,Date.now()];
+                else window._eye_prediction = [0,0,Date.now()];
             })
-            .saveDataAcrossSessions(true)
+            // .saveDataAcrossSessions(true)
             .begin();
         loading.value = false;
         window.webgazer.showVideoPreview(true) /* shows all video previews */
@@ -119,10 +121,10 @@ onMounted(async () => {
 
 
 })
-window.saveDataAcrossSessions = true;
+// window.saveDataAcrossSessions = true;
 onBeforeUnmount(() => {
     if(window.eyegaze_enable){
-    window.webgazer.pause();
+        // window.webgazer.pause();
     }
 })
 
