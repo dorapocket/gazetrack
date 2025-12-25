@@ -1,27 +1,28 @@
 # ------------------------------------
-#   If you need English case, you can refer to [s_en.yaml] file
+#   If you need an English example, you can refer to the [s_en.yaml] file.
 # ------------------------------------
-#   欢迎您使用阿里云函数计算 FC 组件进行项目开发
-#   组件仓库地址：https://github.com/devsapp/fc
-#   组件帮助文档：https://www.serverless-devs.com/fc/readme
-#   Yaml参考文档：https://www.serverless-devs.com/fc/yaml/readme
-#   关于：
-#      - Serverless Devs和FC组件的关系、如何声明/部署多个函数、超过50M的代码包如何部署
-#      - 关于.fcignore使用方法、工具中.s目录是做什么、函数进行build操作之后如何处理build的产物
-#   等问题，可以参考文档：https://www.serverless-devs.com/fc/tips
-#   关于如何做CICD等问题，可以参考：https://www.serverless-devs.com/serverless-devs/cicd
-#   关于如何进行环境划分等问题，可以参考：https://www.serverless-devs.com/serverless-devs/extend
-#   更多函数计算案例，可参考：https://github.com/devsapp/awesome/
-#   有问题快来钉钉群问一下吧：33947367
+#   Welcome to use the Aliyun Function Compute (FC) component for project development.
+#   Component repository: https://github.com/devsapp/fc
+#   Component documentation: https://www.serverless-devs.com/fc/readme
+#   YAML reference: https://www.serverless-devs.com/fc/yaml/readme
+#   About:
+#      - The relationship between Serverless Devs and the FC component, how to declare/deploy multiple functions,
+#        and how to deploy code packages larger than 50 MB.
+#      - How to use .fcignore, what the .s directory is for, and how to handle build artifacts.
+#   For these topics, see: https://www.serverless-devs.com/fc/tips
+#   For CI/CD: https://www.serverless-devs.com/serverless-devs/cicd
+#   For environment separation: https://www.serverless-devs.com/serverless-devs/extend
+#   More FC examples: https://github.com/devsapp/awesome/
+#   For support, contact the DingTalk group: [hidden for peer review]
 # ------------------------------------
 edition: 1.0.0
 name: web-framework-app
-# access 是当前应用所需要的密钥信息配置：
-# 密钥配置可以参考：https://www.serverless-devs.com/serverless-devs/command/config
-# 密钥使用顺序可以参考：https://www.serverless-devs.com/serverless-devs/tool#密钥使用顺序与规范
+# Access is the credential configuration required by this application:
+# Credential configuration reference: https://www.serverless-devs.com/serverless-devs/command/config
+# Credential resolution order: https://www.serverless-devs.com/serverless-devs/tool
 access: "undefined"
 
-vars: # 全局变量
+vars: # Global variables
   region: "cn-beijing"
   functionName: "express"
   service:
@@ -29,23 +30,24 @@ vars: # 全局变量
     description: 'Serverless Devs Web Framework Service'
     
 services:
-  framework: # 业务名称/模块名称
-    # 如果只想针对 framework 下面的业务进行相关操作，可以在命令行中加上 framework，例如：
-    # 只对framework进行构建：s framework build
-    # 如果不带有 framework ，而是直接执行 s build，工具则会对当前Yaml下，所有和 framework 平级的业务模块（如有其他平级的模块，例如下面注释的next-function），按照一定顺序进行 build 操作
-    component: fc # 组件名称，Serverless Devs 工具本身类似于一种游戏机，不具备具体的业务能力，组件类似于游戏卡，用户通过向游戏机中插入不同的游戏卡实现不同的功能，即通过使用不同的组件实现不同的具体业务能力
-    actions:       # 自定义执行逻辑，关于actions 的使用，可以参考：https://www.serverless-devs.com/serverless-devs/yaml#行为描述
-      pre-deploy: # 在deploy之前运行
-        - run: npm install --production --registry=https://registry.npmmirror.com                   # 要执行的系统命令，类似于一种钩子的形式
-          path: ./code                                    # 执行系统命令/钩子的路径
-#        - component: fc build --use-docker               # 要运行的组件，格式为【component: 组件名 命令 参数】（可以通过s cli registry search --type Component 获取组件列表）
-#        - plugin: myplugin                               # 与运行的插件 （可以通过s cli registry search --type Plugin 获取组件列表）
-#          args:                                          # 插件的参数信息
+  framework: # Business name/module name
+    # If you only want to operate on the framework module, add framework on the command line, e.g.:
+    # Build only framework: s framework build
+    # If you run s build without framework, the tool will build all modules at the same level
+    # as framework (such as next-function below), in sequence.
+    component: fc # Component name. Serverless Devs is the console, components are the game cards.
+    actions:       # Custom execution logic. See: https://www.serverless-devs.com/serverless-devs/yaml
+      pre-deploy: # Run before deploy
+        - run: npm install --production --registry=https://registry.npmmirror.com                   # Command to run
+          path: ./code                                    # Working directory for the command
+#        - component: fc build --use-docker               # Component command: [component: name command args]
+#        - plugin: myplugin                               # Plugin to run
+#          args:                                          # Plugin args
 #            testKey: testValue
-#      post-deploy: # 在deploy之后运行
-#        - component: fc versions publish # 要运行的命令行
-    props: # 组件的属性值
-      region: ${vars.region}         # 关于变量的使用方法，可以参考：https://www.serverless-devs.com/serverless-devs/yaml#变量赋值
+#      post-deploy: # Run after deploy
+#        - component: fc versions publish # Command to run
+    props: # Component props
+      region: ${vars.region}         # Variable usage: https://www.serverless-devs.com/serverless-devs/yaml
       service: ${vars.service}
       function:
         name: ${vars.functionName}
@@ -69,17 +71,17 @@ services:
           protocol: HTTP
           routeConfigs:
             - path: '/upload'
-#  next-function: # 第二个函数的案例，仅供参考
-#    # 如果在当前项目下执行 s deploy，会同时部署模块：
-#    #   helloworld：服务hello-world-service，函数cpp-event-function
-#    #   next-function：服务hello-world-service，函数next-function-example
-#    # 如果想单独部署当前服务与函数，可以执行 s + 模块名/业务名 + deploy，例如：s next-function deploy
-#    # 如果想单独部署当前函数，可以执行 s + 模块名/业务名 + deploy function，例如：s next-function deploy function
-#    # 更多命令可参考：https://www.serverless-devs.com/fc/readme#文档相关
+#  next-function: # Second function example (for reference only)
+#    # If you run s deploy in this project, it will deploy modules:
+#    #   helloworld: service hello-world-service, function cpp-event-function
+#    #   next-function: service hello-world-service, function next-function-example
+#    # To deploy only this service/function: s <module-name> deploy (e.g. s next-function deploy)
+#    # To deploy only this function: s <module-name> deploy function (e.g. s next-function deploy function)
+#    # More commands: https://www.serverless-devs.com/fc/readme
 #    component: fc
 #    props:
 #      region: ${vars.region}
-#      service: ${vars.service} # 应用整体的服务配置
-#      function: # 定义一个新的函数
+#      service: ${vars.service} # Service config for the application
+#      function: # Define a new function
 #        name: next-function-example
 #        description: 'hello world by serverless devs'

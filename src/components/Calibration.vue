@@ -1,5 +1,5 @@
 <template>
-    <a-spin :loading="loading" tip="请稍后...">
+    <a-spin :loading="loading" tip="Please wait...">
         <div style="width: 100vw;height: 100vh;">
             <canvas id="plotting_canvas" width="500" height="500" style="cursor:crosshair;"></canvas>
 
@@ -23,9 +23,9 @@
             </div>
             <a-modal v-model:visible="modalVisible" @ok="handleOk" @cancel="handleCancel">
                 <template #title>
-                    眼动校准
+                    Eye-tracking Calibration
                 </template>
-                <div>请注视并点击画面上显示的9个点. 您必须点击每个点5次直到该点变成黄色。 这一步骤会帮助我们校准您的眼动。</div>
+                <div>Please look at and click the 9 points shown on the screen. You must click each point 5 times until it turns yellow. This step helps us calibrate your eye tracking.</div>
             </a-modal>
         </div>
 
@@ -95,9 +95,9 @@ onMounted(async () => {
     } catch (e) {
         console.log(e);
         Modal.error({
-            title: '错误',
-            content: "加载时出现问题，请联系主试。" + e,
-            okText: "刷新",
+            title: 'Error',
+            content: "There was a problem loading. Please contact the experimenter. " + e,
+            okText: "Refresh",
             maskClosable:false,
             hideCancel: true,
             simple: true,

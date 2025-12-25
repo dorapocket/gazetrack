@@ -9,18 +9,18 @@ import { onMounted, getCurrentInstance } from 'vue';
 const emit = getCurrentInstance().emit;
 function showModalNext() {
     Modal.info({
-        title: '分辨率测试',
-        content: "在实验开始之前，请先确认您的显示器分辨率是否满足要求。请问您是否能完全看见黑色矩形框？",
-        okText: "可以",
-        cancelText: "不能",
+        title: 'Resolution Check',
+        content: "Before the experiment starts, please confirm that your screen resolution meets the requirements. Can you fully see the black rectangle?",
+        okText: "Yes",
+        cancelText: "No",
         hideCancel: false,
         simple: false,
         maskClosable:false,
         onCancel: () => {
             Modal.error({
-                title: '对不起',
-                content: "对不起，您可能不满足实验条件，请使用更大分辨率的电脑重试。",
-                okText: "退出",
+                title: 'Sorry',
+                content: "Sorry, your screen may not meet the requirements. Please try again on a higher-resolution device.",
+                okText: "Exit",
                 hideCancel: true,
                 maskClosable:false,
                 simple: true,
@@ -46,10 +46,10 @@ onMounted(() => {
             showModalNext()
         } else {
             Modal.warning({
-                title: '数据恢复',
-                content: "您好，我们检测到您有待发送的数据。是否要重新进行发送？",
-                okText: "发送",
-                cancelText: "我不知道",
+                title: 'Data Recovery',
+                content: "We detected data that has not been sent. Would you like to resend it?",
+                okText: "Send",
+                cancelText: "Not sure",
                 maskClosable:false,
                 hideCancel: false,
                 simple: false,

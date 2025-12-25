@@ -1,5 +1,5 @@
 <template>
-    <a-spin :loading="loading" tip="请稍后...">
+    <a-spin :loading="loading" tip="Please wait...">
         <div id="different-container" style="width: 100vw;height: 100vh;">
             <div style="position: absolute; margin: 10px 30px; top:0px; right:20px">
                 <h1><icon-clock-circle style="margin-right: 10px;" /> {{ remainingTime }}s</h1>
@@ -49,9 +49,9 @@ onMounted(async () => {
         } catch (e) {
             console.log(e);
             Modal.error({
-                title: '错误',
-                content: "加载时出现问题，请联系主试。" + e,
-                okText: "刷新",
+                title: 'Error',
+                content: "There was a problem loading. Please contact the experimenter. " + e,
+                okText: "Refresh",
                 maskClosable: false,
                 hideCancel: true,
                 simple: true,
@@ -102,21 +102,21 @@ const loadImages = (timer) => {
     context.fillStyle = '#ffffff';
     context.fillRect(0, 0, canvas.width, canvas.height);
     // let anotherload = false;
-    // 十字的中心坐标
+    // Crosshair center coordinates
     var centerX = canvasWidth / 2;
     var centerY = canvasHeight / 2;
-    // 十字臂的长度
+    // Crosshair arm length
     var armLength = 16;
 
-    // 画横线
+    // Draw horizontal line
     context.beginPath();
     context.moveTo(centerX - armLength, centerY);
     context.lineTo(centerX + armLength, centerY);
-    context.strokeStyle = "#000"; // 设置线条颜色
-    context.lineWidth = 3; // 设置线条宽度
+    context.strokeStyle = "#000"; // Line color
+    context.lineWidth = 3; // Line width
     context.stroke();
 
-    // 画竖线
+    // Draw vertical line
     context.beginPath();
     context.moveTo(centerX, centerY - armLength);
     context.lineTo(centerX, centerY + armLength);
@@ -212,9 +212,9 @@ const startTimer = () => {
             clearInterval(timer);
             finishTime = Date.now();
             Modal.error({
-                title: '时间到啦',
-                content: "没关系，下次继续加油哦！",
-                okText: "下一组",
+                title: 'Time is up',
+                content: "It's okay—let's keep going next time!",
+                okText: "Next set",
                 hideCancel: true,
                 maskClosable: false,
                 simple: true,
@@ -225,9 +225,9 @@ const startTimer = () => {
                         context.fillStyle = '#ffffff';
                         context.fillRect(0, 0, cvs.width, cvs.height);
                         Modal.info({
-                            title: '休息',
-                            content: "一组结束，辛苦啦，休息一下吧！",
-                            okText: "继续",
+                            title: 'Break',
+                            content: "One set is complete. Great work—please take a short break!",
+                            okText: "Continue",
                             hideCancel: true,
                             maskClosable: false,
                             simple: true,
@@ -324,9 +324,9 @@ const handleCanvasClick = (event) => {
                 context.fillStyle = '#ffffff';
                 context.fillRect(0, 0, cvs.width, cvs.height);
                 Modal.info({
-                    title: '休息',
-                    content: "一组结束，辛苦啦，休息一下吧！",
-                    okText: "继续",
+                    title: 'Break',
+                    content: "One set is complete. Great work—please take a short break!",
+                    okText: "Continue",
                     hideCancel: true,
                     maskClosable: false,
                     simple: true,
@@ -342,9 +342,9 @@ const handleCanvasClick = (event) => {
         }, 500)
 
         // Modal.info({
-        //     title: '结果',
-        //     content: "你真厉害！🎊",
-        //     okText: "继续",
+        //     title: 'Result',
+        //     content: "You're amazing! 🎊",
+        //     okText: "Continue",
         //     simple: true,
         //     hideCancel:true,
         //     onOk: () => {
@@ -424,7 +424,7 @@ const drawX = (x, y) => {
 
     //   if (clicks.value >= 2) {
     //     clearInterval(timer);
-    //     alert("恭喜你找到了所有不同点！");
+    //     alert("Congratulations! You found all the differences!");
     //   }
 };
 </script>
