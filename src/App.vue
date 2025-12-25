@@ -8,14 +8,9 @@ if(window.eyegaze_enable){
   window.webgazer = webgazer
   console.log("ok!!!!!!!",webgazer)
 }
-
-// const haha = ref({a:1})
-// setInterval(()=>{haha.value={a:haha.value.a+1}},1000)
-// provide("haha",haha)
 </script>
 
 <template>
-  <!-- <HelloWorld msg="Vite + Vue" /> -->
   <PsychMain class="main-wrapper"/>
 </template>
 
