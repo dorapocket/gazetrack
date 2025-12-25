@@ -1,11 +1,16 @@
-目前ps好7组，每组5张图片，分别命名为AB,A'B,AB',B,B'
-A表示人，B表示背景，’表示不同，例如不同出现在人身上则为A'
-还有两组在ps过程中，最后一共为9组
+Currently 7 sets are prepared in Photoshop, each with 5 images, named AB, A'B, AB', B, B'.
+A = person, B = background, and ' indicates the difference. For example, A' means the difference is on the person.
+Two more sets are still being edited, for a total of 9 sets.
 
-对于每个被试来说，都会观看这9组图片，不过随机三幅是AB与A'B；随机三幅是AB与AB'；剩下三幅是B和B‘，因此被试不会看见重复的一组图片
-出现的顺序完全随机
+Each participant will view all 9 sets, but the specific pairings are randomized:
+- Three sets are AB vs A'B
+- Three sets are AB vs AB'
+- Three sets are B vs B'
+Therefore, participants will not see a repeated image pair.
+The order is fully randomized.
 
-需要注意尽可能保证每组图片在不影响观看舒适度的前提下分离（因为还是会尝试加入眼动，也许可以通过限制显示器尺寸和视距弥补精确度不足的问题）
-如果可以也记一下鼠标轨迹
+Make sure each pair is separated enough for comfortable viewing (eye tracking may be used, so screen size and viewing distance may need to be constrained to improve precision).
+If possible, also record mouse trajectories.
 
-指导语如下：欢迎参与本次实验，接下来您将会看见左右呈现的两幅真实场景的图片，你需要在60s内找出两幅图片中的一处不同，可以利用鼠标辅助搜索，在任何图片中左击选中的物体，如果错误则不会有任何反应，如果正确则出现绿色圆圈并进入下一题。
+Instruction text:
+Welcome to this experiment. You will see two real-world scene images presented side by side. You need to find one difference between them within 60 seconds. You may use the mouse to assist your search. Left click on the object you select in either image. If it is incorrect, nothing happens; if it is correct, a green circle will appear and you will proceed to the next trial.

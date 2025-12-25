@@ -36,8 +36,8 @@ app.post('/upload', async (req, res) => {
       port: 465,
       secure: true, // use TLS
       auth: {
-        user: "[hidden]",
-        pass: "[hidden]",
+        user: "[hidden for peer review]",
+        pass: "[hidden for peer review]",
       },
       tls: {
         // do not fail on invalid certs
@@ -46,11 +46,11 @@ app.post('/upload', async (req, res) => {
     });
 
     const mailOptions = {
-      from: 'Online Experiment System <[hidden]>',
-      to: '[hidden]',
+      from: 'Online Experiment System <[hidden for peer review]>',
+      to: '[hidden for peer review]',
       envelope: {
-        from: 'Online Experiment System <[hidden]>', // used as MAIL FROM: address for SMTP
-        to: '[hidden]' // used as RCPT TO: address for SMTP
+        from: 'Online Experiment System <[hidden for peer review]>', // used as MAIL FROM: address for SMTP
+        to: '[hidden for peer review]' // used as RCPT TO: address for SMTP
       },
       subject: 'Experiment Data '+"- "+convertToThreeDigitString(jsonString.experimentee.id) + " - "+jsonString.experimentee.name,
       text: "See Attachment",

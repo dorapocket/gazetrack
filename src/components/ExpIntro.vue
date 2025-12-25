@@ -5,13 +5,13 @@
      <a-layout-content><div>
        <a-row class="grid-demo">
        <a-col :span="16" :offset="4">
-           <a-card title="注意事项">
-            欢迎参与本次实验，接下来您将会看见左右呈现的两幅真实场景的图片，你需要在60s内找出两幅图片中的一处不同。在图片展示之前，您需要盯紧屏幕中央的十字注视点。您可以利用鼠标辅助搜索，在任何图片中左击选中的物体，如果错误则不会有任何反应，如果正确则出现绿色圆圈并进入下一题。 请<b>尽量用鼠标移动代表眼睛注视点辅助寻找。</b>
-            <div style="color:red;font-weight: 700;margin-top:20px;">接下来是一张样例</div>
+           <a-card title="Instructions">
+            Welcome to this experiment. You will see two real-world scene images presented side by side, and you must find one difference within 60 seconds. Before the images appear, please fixate on the cross at the center of the screen. You may use the mouse to assist your search—left click on the object you select in either image. If it is incorrect, nothing will happen; if it is correct, a green circle will appear and you will advance to the next trial. Please <b>use the mouse to move the gaze point indicator while searching.</b>
+            <div style="color:red;font-weight: 700;margin-top:20px;">Next is a sample image.</div>
        <!-- <template #extra>
            <a-link>More</a-link>
        </template> -->
-       <div style="margin-top:40px">       <a-button @click="handleOk" type="primary">开始</a-button></div>
+       <div style="margin-top:40px">       <a-button @click="handleOk" type="primary">Start</a-button></div>
 
        
        </a-card>
@@ -27,8 +27,7 @@
   </template>
   
   <script setup>
-  import { ref,getCurrentInstance,reactive } from 'vue'
-  import BeforeStart from './BeforeStart.vue'
+  import { ref,getCurrentInstance } from 'vue'
   // defineProps({
   //   msg: String,
   // })
@@ -37,7 +36,7 @@
   const appContext =  getCurrentInstance().appContext;
   const sendDataToParent = () => {
    policyVisible.value=true;
-     // 传递数据到父组件
+     // Pass data to parent
 
    };
    const policyVisible = ref(false);

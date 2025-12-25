@@ -61,9 +61,9 @@ function calcAccuracy() {
     // notification for the measurement process
 
     Modal.info({
-        title: '校验',
-        content: "请不要移动您的鼠标 & 盯住中间的点5秒。我们将测量您的眼动准确度。",
-        okText:"确认",
+        title: 'Validation',
+        content: "Please do not move your mouse and stare at the center point for 5 seconds. We will measure eye-tracking accuracy.",
+        okText:"Confirm",
         maskClosable:false,
         onOk:()=>{
             store_points_variable(); // start storing the prediction points
@@ -74,21 +74,21 @@ function calcAccuracy() {
                     var precision_measurement = calculatePrecision(past50);
                     window.accuracy_user = precision_measurement;
                     Modal.info({
-                        title: '校验结果',
+                        title: 'Validation Results',
                         maskClosable:false,
                         content: ()=>h({
                             setup() {
                               return () => h('div', {class: 'info-modal-content'}, [
-                                h('div', {style: 'margin-bottom: 10px;'}, "您的校验准确度为：" + precision_measurement + "%"),
+                                h('div', {style: 'margin-bottom: 10px;'}, "Your validation accuracy is: " + precision_measurement + "%"),
                                 h('div', {style: precision_measurement>measurement_limit?'color:green;':'color:red;'},[
-                                    h('span',{},precision_measurement>measurement_limit?'您可以点击继续开始实验。':'您的准确度不足，请重新校准！')
+                                    h('span',{},precision_measurement>measurement_limit?'You can click Continue to start the experiment.':'Your accuracy is too low. Please recalibrate!')
                                 ]),
                               ])
                             },
                           })
                         ,
-                        okText:"继续试验",
-                        cancelText:"重新校准",
+                        okText:"Continue",
+                        cancelText:"Recalibrate",
                         draggable:true,
                         simple:false,
                         hideCancel:false,

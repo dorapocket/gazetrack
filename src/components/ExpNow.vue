@@ -6,15 +6,15 @@
         <div>
           <a-row class="grid-demo">
             <a-col :span="16" :offset="4">
-              <a-card title="开始实验">
-                接下来将正式开始实验。您将看见9组图片，请在时间限制内找出图片中的不同点。
-                <div style="color:black;font-weight: 700;margin-top:20px">请尽量使用鼠标辅助显示您的注视位置。</div>
+              <a-card title="Start the Experiment">
+                The experiment will now begin. You will see 9 sets of images and must find the difference within the time limit.
+                <div style="color:black;font-weight: 700;margin-top:20px">Please use the mouse to assist and indicate your gaze position.</div>
                 <video id="introv" src="../assets/demo.mp4" muted autoplay loop></video>
-                <div style="color:green;font-weight: 700;margin-top:20px">如果您准备好了，请点击开始😊</div>
+                <div style="color:green;font-weight: 700;margin-top:20px">When you are ready, click Start 😊</div>
                 <!-- <template #extra>
             <a-link>More</a-link>
         </template> -->
-                <div style="margin-top:40px"> <a-button @click="handleOk" type="primary">开始</a-button></div>
+                <div style="margin-top:40px"> <a-button @click="handleOk" type="primary">Start</a-button></div>
 
 
               </a-card>
@@ -31,8 +31,7 @@
    
 <script setup>
 import FindDifferent from './FindDifferent.vue'
-import { ref, getCurrentInstance, reactive, provide } from 'vue'
-import BeforeStart from './BeforeStart.vue'
+import { ref, getCurrentInstance, provide } from 'vue'
 import different_config from "../assets/different_config.json"
 import { chunk, shuffle, cloneDeep } from 'lodash'
 
