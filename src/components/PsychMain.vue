@@ -21,7 +21,7 @@ import ExpNow from './ExpNow.vue'
 import Success from './Success.vue'
 import TestView from './TestView.vue';
 
-const step = ref(0)
+const step = ref(window._startStep)
 const scale = 550/923
 const imageDifferentDataDemo = ref({
     pic1: "/public/different/demo/AB.jpg",

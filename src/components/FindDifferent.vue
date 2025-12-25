@@ -256,8 +256,9 @@ const startTimer = () => {
                     let x = (((pre.x || 0) - canvas.getBoundingClientRect().left) || 0).toFixed(1)
                     let y = ((pre.y || 0) - (canvas.getBoundingClientRect().top || 0)).toFixed(1)
                     // console.log("Eye:", [parseFloat(x || "0.0") || 0, parseFloat(y || "0.0") || 0, t])
-    //     window.gazeDot.style.display = 'block';
-    //   window.gazeDot.style.transform = 'translate3d(' + pre.x + 'px,' + pre.y + 'px,0)';
+                    if(window._showpoints){
+        window.gazeDot.style.display = 'block';
+      window.gazeDot.style.transform = 'translate3d(' + pre.x + 'px,' + pre.y + 'px,0)';}
                     eye_move.push([parseFloat(x || "0.0") || 0, parseFloat(y || "0.0") || 0, t])
                 } catch (e) {
                     // console.log("Err! Eye: [0,0]",Date.now())
